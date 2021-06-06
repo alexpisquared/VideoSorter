@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="VideoSorter.Views.VideoUC" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" mc:Ignorable="d" 
+             xmlns:local="clr-namespace:VideoSorter.Views"
+             d:DesignHeight="216" d:DesignWidth="384"
+             MinHeight="216" MinWidth="384"
+             MaxHeight="432" MaxWidth="768"
+             Background="#8888" 
+             Loaded="onLoaded" >
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <MediaElement Grid.Row="1" x:Name="me1" LoadedBehavior="Manual" Margin="5" >
+      <MediaElement.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="_Bold" IsCheckable="True" Checked="Bold_Checked" Unchecked="Bold_Unchecked" />
+          <Separator />
+          <MenuItem Header="I_ncrease Font Size" Click="IncreaseFont_Click" />
+          <MenuItem Header="_Decrease Font Size" Click="DecreaseFont_Click" />
+        </ContextMenu>
+      </MediaElement.ContextMenu>
+    </MediaElement>
+
+    <TextBlock    Grid.Row="1" x:Name="tbkFilename" d:Text="lkjlkj lkjlkj lkjlkj lkjlkj lkjlkj lkjlkj lkjlkj .mp4" TextWrapping="Wrap" Visibility="Collapsed" />
+    <Menu x:Name="menu"/>
+
+  </Grid>
+</UserControl>
