@@ -19,7 +19,7 @@ namespace VideoSorter
 {
   public partial class MainWindow : Window
   {
-    const int _max = 6;
+    const int _max = 16;
     public MainWindow()
     {
       InitializeComponent();

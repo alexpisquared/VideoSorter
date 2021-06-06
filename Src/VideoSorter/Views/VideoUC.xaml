@@ -4,7 +4,7 @@
              MinHeight="216" MinWidth="384"
              MaxHeight="432" MaxWidth="768"
              Background="#8888" 
-             Loaded="onLoaded" >
+             Loaded="onLoaded" MouseLeftButtonDown="onMouseLeftButtonDown" >
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -23,7 +23,14 @@
       </MediaElement.ContextMenu>
     </MediaElement>
 
-    <TextBlock    Grid.Row="1" x:Name="tbkFilename" d:Text="lkjlkj lkjlkj lkjlkj lkjlkj lkjlkj lkjlkj lkjlkj .mp4" TextWrapping="Wrap" Visibility="Collapsed" />
+    <Grid         Grid.Row="1" 
+                  x:Name="pnlFilename" 
+                  Visibility="Collapsed" 
+                  d:Visibility="Visible" Background="#2000">
+
+      <TextBlock  x:Name="tbkFilename" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#ff0" d:Text="lkjlkj lkjlkj lkjlkj lkjlkj .mp4" />
+    </Grid>
+
     <Menu x:Name="menu"/>
 
   </Grid>

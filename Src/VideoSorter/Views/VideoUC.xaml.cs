@@ -19,6 +19,7 @@ namespace VideoSorter.Views
   {
     string _vf;
     bool _isplaying;
+    bool _isActive = true;
 
     public VideoUC()
     {
@@ -46,6 +47,24 @@ namespace VideoSorter.Views
         if (value) me1.Play(); else me1.Pause();
       }
     }
+
+
+    public bool IsAcitve
+    {
+      get { return _isActive; }
+      set
+      {
+        _isActive = value;
+        if (value)
+          pnlFilename.Visibility = Visibility.Collapsed;
+        else
+        {
+          pnlFilename.Visibility = Visibility.Visible;
+          me1.Pause();
+        }
+      }
+    }
+
 
     internal void Restart()
     {
@@ -87,6 +106,12 @@ namespace VideoSorter.Views
       {
         tbkFilename.FontSize -= 2;
       }
+    }
+
+    void onMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+      IsAcitve = !IsAcitve;
+
     }
   }
 }
