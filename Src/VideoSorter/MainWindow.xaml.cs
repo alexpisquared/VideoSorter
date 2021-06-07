@@ -11,14 +11,17 @@ namespace VideoSorter
     const int _max = 96;
     public MainWindow() => InitializeComponent();
 
-    async void Window_Loaded(object sender, RoutedEventArgs e)
+    async void onLoaded(object sender, RoutedEventArgs e)
     {
       var i = 0;
       foreach (var filename in Directory.GetFiles(@"C:\Users\alexp\OneDrive\Pictures\Camera Roll 1\SurfSkate", "*.mp4"))
       {
         if (++i > _max) break;
 
-        _ = wp1.Children.Add(new VideoUC(filename)); // { VideoFile = filename });// ;
+        var rr = new VideoUC(filename);
+        rr.Focusable = true;
+        wp1.Children.Add(rr); // { VideoFile = filename });// ;
+
         await Task.Delay(200);
       }
     }
