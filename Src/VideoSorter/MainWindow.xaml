@@ -2,7 +2,7 @@
         xmlns:local="clr-namespace:VideoSorter"
         Title="Video Sorter" 
         Loaded="Window_Loaded"
-        Left="0" Top="1600" Width="1900" Height="1060" Background="#333">
+        Left="0" Top="1600" Width="1900" Height="1080" Background="#333" WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown" >
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -10,11 +10,15 @@
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <StackPanel Grid.Row="0" x:Name="headerPanel1"  Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Visibility="Collapsed"/> 
-    <WrapPanel  Grid.Row="1" x:Name="wp1" Background="#8000" Margin="5" />
-    <StackPanel Grid.Row="2" x:Name="controlPanel1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+    <StackPanel Grid.Row="0" x:Name="headerPanel1"  Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Visibility="Collapsed"/>
+    <ScrollViewer Grid.Row="1" Margin="5" Grid.RowSpan="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">      
+      <WrapPanel  x:Name="wp1" />
+    </ScrollViewer>
+
+    <StackPanel Grid.Row="2" x:Name="controlPanel1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Background="#8000" >
       <Button Margin="5" Content="_Tgl Play"  IsDefault="True" Click="onTglPlay" />
       <Button Margin="5" Content="_Restart"   Click="onToStart" />
+      <Button Margin="5" Content="_Pause"     Click="onPausAll" />
       <Button Margin="5" Content="_X"  IsCancel="True" Click="onClose" />
     </StackPanel>
 
