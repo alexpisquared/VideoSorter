@@ -10,7 +10,7 @@
              Focusable="True">
   <UserControl.ContextMenu>
     <ContextMenu>
-      <MenuItem Header="_Delete File" Click="onDelete" Foreground="#c00" />
+      <MenuItem Header="_Delete File" Click="onSort" Foreground="#c00" />
       <MenuItem Header="_Decrease Font Size" Click="DecreaseFont_Click" />
       <Separator />
       <MenuItem Header="_Bold" IsCheckable="True" Checked="Bold_Checked" Unchecked="Bold_Unchecked" />
@@ -34,7 +34,13 @@
       <TextBlock  x:Name="tbkFilename" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Center" Foreground="#ff0" d:Text="lkjlkj lkjlkj lkjlkj lkjlkj .mp4" />
     </Grid>
 
-    <TextBlock    Grid.Row="1" x:Name="tbkDuration" TextWrapping="Wrap" VerticalAlignment="Top"    HorizontalAlignment="Left"   Foreground="#ff0" d:Text="22:22" FontSize="18" Margin="5" Background="#4000" />
+    <TextBlock    Grid.Row="1" x:Name="tbkDuration" TextWrapping="Wrap" VerticalAlignment="Top"    HorizontalAlignment="Right"   Foreground="#ff0" d:Text="22:22" FontSize="18" Margin="5" Background="#4000" />
+
+    <StackPanel   Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top"    HorizontalAlignment="Left"  Margin="5" >
+      <Button Content="  _1  " Background="#80f0" Margin="5" Click="onSort" />
+      <Button Content="  _2  " Background="#8aa0" Margin="5" Click="onSort" />
+      <Button Content="  _3  " Background="#8f00" Margin="5" Click="onSort" />
+    </StackPanel>
 
   </Grid>
 </UserControl>

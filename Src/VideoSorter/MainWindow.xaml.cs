@@ -11,7 +11,7 @@ namespace VideoSorter
     const int _max = 96;
     public MainWindow() => InitializeComponent();
 
-    async void onLoaded(object sender, RoutedEventArgs e)
+    async void onLoaded(object s, RoutedEventArgs e)
     {
       var i = 0;
       foreach (var filename in Directory.GetFiles(@"C:\Users\alexp\OneDrive\Pictures\Camera Roll 1\SurfSkate", "*.mp4"))
@@ -26,13 +26,13 @@ namespace VideoSorter
       }
     }
 
-    void onTglPlay(object sender, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.IsPlaying = !vp.IsPlaying; } }
-    void onToStart(object sender, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.RestartFromBegining(); } }
-    void onPausAll(object sender, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.Pause(); } }
-    void onClose(object sender, RoutedEventArgs e) { Close(); ; }
+    void onTglPlay(object s, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.IsPlaying = !vp.IsPlaying; } }
+    void onToStart(object s, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.RestartFromBegining(); } }
+    void onPausAll(object s, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.Pause(); } }
+    void onClose(object s, RoutedEventArgs e) { Close(); ; }
 
-    void Button_Click(object sender, RoutedEventArgs e) { }
+    void Button_Click(object s, RoutedEventArgs e) { }
 
-    void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => DragMove();
+    void Window_MouseLeftButtonDown(object s, MouseButtonEventArgs e) => DragMove();
   }
 }

@@ -12,11 +12,11 @@ namespace VideoSorter.Views
   {
     string _vf;
     bool _isplaying, _isActive;
-    Brush _deleteBrush = new SolidColorBrush(Color.FromArgb(96, 128, 0, 0));
+    readonly Brush _deleteBrush = new SolidColorBrush(Color.FromArgb(96, 128, 0, 0));
 
     public VideoUC() => InitializeComponent();
     public VideoUC(string item) : this() => _vf = item;
-    async void onLoaded(object sender, RoutedEventArgs e)
+    async void onLoaded(object s, RoutedEventArgs e)
     {
       me1.ToolTip =
       tbkFilename.Text = System.IO.Path.GetFileNameWithoutExtension(_vf);
@@ -28,7 +28,7 @@ namespace VideoSorter.Views
       PreviewKeyDown += VideoUC_PreviewKeyDown;
     }
 
-    void VideoUC_PreviewKeyDown(object sender, KeyEventArgs e) => throw new NotImplementedException();
+    void VideoUC_PreviewKeyDown(object s, KeyEventArgs e) => throw new NotImplementedException();
 
     public string VideoFile { get => _vf; internal set => tbkFilename.Text = _vf = value; }
     public bool IsAcitve
@@ -54,42 +54,61 @@ namespace VideoSorter.Views
     internal void Pause() { _isplaying = false; me1.Pause(); }
     internal void RestartFromBegining() { me1.Stop(); if (IsAcitve) me1.Play(); }
 
-    void Bold_Checked(object sender, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Bold;
-    void Bold_Unchecked(object sender, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Normal;
-    void onDelete(object sender, RoutedEventArgs e) { deleteSequence(); }
-    void DecreaseFont_Click(object sender, RoutedEventArgs e) { if (tbkFilename.FontSize > 10) { tbkFilename.FontSize -= 2; } }
+    void Bold_Checked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Bold;
+    void Bold_Unchecked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Normal;
+    void DecreaseFont_Click(object s, RoutedEventArgs e) { if (tbkFilename.FontSize > 10) { tbkFilename.FontSize -= 2; } }
 
-    void me1_Loaded(object sender, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $"{me1.NaturalDuration.TimeSpan:mm\\:ss} Loed"; }
-    void me1_MediaOpened(object sender, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $" {me1.NaturalDuration.TimeSpan.TotalSeconds:N0} "; }
-    void me1_MediaFailed(object sender, ExceptionRoutedEventArgs e) => tbkDuration.Text = $"{e.ErrorException.Message}";
+    void me1_Loaded(object s, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $"{me1.NaturalDuration.TimeSpan:mm\\:ss} Loed"; }
+    void me1_MediaOpened(object s, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $" {me1.NaturalDuration.TimeSpan.TotalSeconds:N0} "; }
+    void me1_MediaFailed(object s, ExceptionRoutedEventArgs e) => tbkDuration.Text = $"{e.ErrorException.Message}";
 
-    void onMouseLeftButtonDown(object sender, MouseButtonEventArgs e) => IsAcitve = !IsAcitve;
+    void onMouseLeftButtonDown(object s, MouseButtonEventArgs e) => IsAcitve = !IsAcitve;
 
-    void onKey___(object sender, KeyEventArgs e)
+    void onKey___(object s, KeyEventArgs e)
     {
       Debug.WriteLine("");
       switch (e.Key)
       {
         case Key.Home: me1.Position = TimeSpan.Zero; break;
         case Key.Delete:
-          deleteSequence();
+          moveAccordingly("_3");
           break;
         default:
           break;
       }
     }
 
-    private void deleteSequence()
+    void onSort(object s, RoutedEventArgs e) => moveAccordingly(((Button)s).Content.ToString().Trim());
+    void moveAccordingly(string whereTo)
     {
+      var sort = new[] { "best", "soso", "grbg" };
+      var trg = "";
+
+      foreach (var srt in sort)
+        trg = _vf.Replace($@"\{srt}\", @"\");
+
+      var trgp = System.IO.Path.GetDirectoryName(trg);
+      var trgf = System.IO.Path.GetFileName(trg);
+
+      switch (whereTo)
+      {
+        case "_1": trg = System.IO.Path.Combine(trgp, sort[0], trgf); break;
+        case "_2": trg = System.IO.Path.Combine(trgp, sort[0], trgf); break;
+        case "_3": trg = System.IO.Path.Combine(trgp, sort[0], trgf); break;
+        default: break;
+      }
+
       pnlFilename.Visibility = Visibility.Visible;
       pnlFilename.Background = _deleteBrush;
-      if (MessageBox.Show("Really", "Are you sure?", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+      if (MessageBox.Show($"Moving from/to\n\n  {_vf}\n\n  {trg}", "Are you sure?", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
       {
+        //System.IO.File.Move(_vf, trg);
         Width = Height = 0;
       }
+
       pnlFilename.Background = Brushes.Transparent;
     }
 
-    void onMouseDoubleClick(object sender, MouseButtonEventArgs e) => RestartFromBegining();
+    void onMouseDoubleClick(object s, MouseButtonEventArgs e) => RestartFromBegining();
   }
 }
