@@ -2,7 +2,7 @@
         xmlns:local="clr-namespace:VideoSorter"
         Title="Video Sorter" 
         Loaded="onLoaded"
-        Left="0" Top="1600" Width="1900" Height="1080" Background="#333" WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown" >
+        Left="0" Top="1600" Width="1900" Height="1080" Background="#333" WindowStyle="None" MouseLeftButtonDown="onDragMove" >
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -20,6 +20,7 @@
       <Button Margin="5" Content="_Restart"   Click="onToStart" />
       <Button Margin="5" Content="_Pause"     Click="onPausAll" />
       <Button Margin="5" Content="_X"  IsCancel="True" Click="onClose" />
+      <TextBlock x:Name="tbkReport" Text="Loading ... " Foreground="#ff0" VerticalAlignment="Center" />
     </StackPanel>
 
   </Grid>

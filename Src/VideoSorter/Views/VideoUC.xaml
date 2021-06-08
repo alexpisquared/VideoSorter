@@ -10,8 +10,10 @@
              Focusable="True">
   <UserControl.ContextMenu>
     <ContextMenu>
-      <MenuItem Header="_Delete File" Click="onSort" Foreground="#c00" />
-      <MenuItem Header="_Decrease Font Size" Click="DecreaseFont_Click" />
+      <MenuItem Header="_1 move to Bests"   Click="onSort" Foreground="#c00" />
+      <MenuItem Header="_2 move to So-So"   Click="onSort" Foreground="#c00" />
+      <MenuItem Header="_3 move to Garbage" Click="onSort" Foreground="#c00" />
+      <MenuItem Header="_Rename"            Click="onRename" />
       <Separator />
       <MenuItem Header="_Bold" IsCheckable="True" Checked="Bold_Checked" Unchecked="Bold_Unchecked" />
     </ContextMenu>
@@ -37,9 +39,28 @@
     <TextBlock    Grid.Row="1" x:Name="tbkDuration" TextWrapping="Wrap" VerticalAlignment="Top"    HorizontalAlignment="Right"   Foreground="#ff0" d:Text="22:22" FontSize="18" Margin="5" Background="#4000" />
 
     <StackPanel   Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top"    HorizontalAlignment="Left"  Margin="5" >
-      <Button Content="  1  " Background="#80f0" Margin="5" Click="onSort" />
-      <Button Content="  2  " Background="#8aa0" Margin="5" Click="onSort" />
-      <Button Content="  3  " Background="#8f00" Margin="5" Click="onSort" />
+      <Button Content="1" Padding="0 0 0 3" Height="40" Width="40" Click="onSort" Background="#80f0" Margin="2"  ToolTip="Move to Best folder" >
+        <Button.Resources>
+          <Style TargetType="{x:Type Border}">
+            <Setter Property="CornerRadius" Value="25"/>
+          </Style>
+        </Button.Resources>
+      </Button>
+      <Button Content="2" Padding="0 0 0 3" Height="40" Width="40" Click="onSort" Background="#8aa0" Margin="2"  ToolTip="Move to So-So folder" >
+        <Button.Resources>
+          <Style TargetType="{x:Type Border}">
+            <Setter Property="CornerRadius" Value="25"/>
+          </Style>
+        </Button.Resources>
+      </Button>
+      <Button Content="3" Padding="0 0 0 3" Height="40" Width="40" Click="onSort" Background="#8f00" Margin="2"  ToolTip="Move to Garbaage folder" >
+        <Button.Resources>
+          <Style TargetType="{x:Type Border}">
+            <Setter Property="CornerRadius" Value="25"/>
+          </Style>
+        </Button.Resources>
+      </Button>
+
     </StackPanel>
 
   </Grid>

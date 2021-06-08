@@ -9,7 +9,7 @@ namespace VideoSorter
 {
   public partial class MainWindow : Window
   {
-    const int _max = 96;
+    const int _max = 512;
     readonly string[] _targetDirSuffixes = new[] { "best", "soso", "grbg" };
     public MainWindow() => InitializeComponent();
 
@@ -34,16 +34,14 @@ namespace VideoSorter
         await Task.Delay(300);
       }
 
+      tbkReport.Text = $"{i} files loaded";
+
       System.Media.SystemSounds.Asterisk.Play();
     }
-
+    void onDragMove(object s, MouseButtonEventArgs e) => DragMove();
     void onTglPlay(object s, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.IsPlaying = !vp.IsPlaying; } }
     void onToStart(object s, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.RestartFromBegining(); } }
     void onPausAll(object s, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.Pause(); } }
     void onClose(object s, RoutedEventArgs e) { Close(); ; }
-
-    void Button_Click(object s, RoutedEventArgs e) { }
-
-    void Window_MouseLeftButtonDown(object s, MouseButtonEventArgs e) => DragMove();
   }
 }

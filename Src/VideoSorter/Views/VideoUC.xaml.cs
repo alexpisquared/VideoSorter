@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace VideoSorter.Views
 {
@@ -20,6 +22,7 @@ namespace VideoSorter.Views
     {
       _vf = item;
       _targetDirSuffixes = targetDirSuffixes;
+      var _timer = new DispatcherTimer(TimeSpan.FromSeconds(.333), DispatcherPriority.Background, new EventHandler((s, e) => tick()), Dispatcher.CurrentDispatcher);//tu: one-line timer	C:\g\BMO-Bid\Src\OLP.DAQ\Logic\ProgrDemo.cs	17	5	C:\g\BMO-Bid\Src\OLP.DAQ\Logic
     }
 
     async void onLoaded(object s, RoutedEventArgs e)
@@ -31,10 +34,10 @@ namespace VideoSorter.Views
       me1.Play();
       await Task.Delay(50);
       me1.Pause();
-      PreviewKeyDown += VideoUC_PreviewKeyDown;
+      PreviewKeyDown += onPreviewKeyDown;
     }
 
-    void VideoUC_PreviewKeyDown(object s, KeyEventArgs e) => throw new NotImplementedException();
+    void tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N1} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";
 
     public string VideoFile { get => _vf; internal set => tbkFilename.Text = _vf = value; }
     public bool IsAcitve
@@ -60,35 +63,34 @@ namespace VideoSorter.Views
     internal void Pause() { _isplaying = false; me1.Pause(); }
     internal void RestartFromBegining() { me1.Stop(); if (IsAcitve) me1.Play(); }
 
-    void Bold_Checked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Bold;
-    void Bold_Unchecked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Normal;
-    void DecreaseFont_Click(object s, RoutedEventArgs e) { if (tbkFilename.FontSize > 10) { tbkFilename.FontSize -= 2; } }
+    void onRename(object s, RoutedEventArgs e)
+    {
+      var rp = new RenamerPopup();
+      var prev = rp.FileName = System.IO.Path.GetFileNameWithoutExtension(_vf);
+      //rp.Owner = this;
+      var rv = rp.ShowDialog();
+      if (rv == true)
+      {
+        var nvf = _vf.Replace(prev, rp.FileName);
+        File.Move(_vf, nvf);
+        _vf = nvf;
+      }
+    }
 
     void me1_Loaded(object s, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $"{me1.NaturalDuration.TimeSpan:mm\\:ss} Loed"; }
     void me1_MediaOpened(object s, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $" {me1.NaturalDuration.TimeSpan.TotalSeconds:N0} "; }
     void me1_MediaFailed(object s, ExceptionRoutedEventArgs e) => tbkDuration.Text = $"{e.ErrorException.Message}";
 
     void onMouseLeftButtonDown(object s, MouseButtonEventArgs e) => IsAcitve = !IsAcitve;
-
-    void onKey___(object s, KeyEventArgs e)
-    {
-      Debug.WriteLine("");
-      switch (e.Key)
-      {
-        case Key.Home: me1.Position = TimeSpan.Zero; break;
-        case Key.Delete:
-          moveAccordingly("_3");
-          break;
-        default:
-          break;
-      }
-    }
+    void onMouseDoubleClick(object s, MouseButtonEventArgs e) => RestartFromBegining();
 
     void onSort(object s, RoutedEventArgs e) => moveAccordingly(((Button)s).Content.ToString().Trim());
     void moveAccordingly(string whereTo)
     {
       try
       {
+        me1.Stop();
+
         var trg = "";
 
         foreach (var srt in _targetDirSuffixes)
@@ -110,7 +112,7 @@ namespace VideoSorter.Views
         Debug.WriteLine($"Moving from/to\n  {_vf}\n  {trg}");
         //if (MessageBox.Show($"Moving from/to\n\n  {_vf}\n\n  {trg}", "Are you sure?", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
         {
-          System.IO.File.Move(_vf, trg);
+          File.Move(_vf, trg);
           Width = Height = 0;
         }
       }
@@ -124,6 +126,20 @@ namespace VideoSorter.Views
       }
     }
 
-    void onMouseDoubleClick(object s, MouseButtonEventArgs e) => RestartFromBegining();
+    void onPreviewKeyDown(object s, KeyEventArgs e) => tbkFilename.Text = $"PreviewKeyDown (off Loaded): {e.Key}";
+    void onKey___(object s, KeyEventArgs e)
+    {
+      Debug.WriteLine("");
+      switch (e.Key)
+      {
+        case Key.F2: onRename(s, e); break;
+        case Key.Home: me1.Position = TimeSpan.Zero; break;
+        case Key.Delete: moveAccordingly("3"); break;
+        default: tbkFilename.Text = $"This key is new: {e.Key}"; break;
+      }
+    }
+    void Bold_Checked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Bold;
+    void Bold_Unchecked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Normal;
+
   }
 }
