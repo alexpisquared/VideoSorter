@@ -37,9 +37,9 @@
     <TextBlock    Grid.Row="1" x:Name="tbkDuration" TextWrapping="Wrap" VerticalAlignment="Top"    HorizontalAlignment="Right"   Foreground="#ff0" d:Text="22:22" FontSize="18" Margin="5" Background="#4000" />
 
     <StackPanel   Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top"    HorizontalAlignment="Left"  Margin="5" >
-      <Button Content="  _1  " Background="#80f0" Margin="5" Click="onSort" />
-      <Button Content="  _2  " Background="#8aa0" Margin="5" Click="onSort" />
-      <Button Content="  _3  " Background="#8f00" Margin="5" Click="onSort" />
+      <Button Content="  1  " Background="#80f0" Margin="5" Click="onSort" />
+      <Button Content="  2  " Background="#8aa0" Margin="5" Click="onSort" />
+      <Button Content="  3  " Background="#8f00" Margin="5" Click="onSort" />
     </StackPanel>
 
   </Grid>

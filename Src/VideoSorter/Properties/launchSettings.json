@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "VideoSorter": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\alexp\\OneDrive\\Pictures\\Camera Roll 1\\SurfSkate\""
+    }
+  }
+}

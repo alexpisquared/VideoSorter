@@ -11,11 +11,17 @@ namespace VideoSorter.Views
   public partial class VideoUC : UserControl
   {
     string _vf;
+    private readonly string[] _targetDirSuffixes;
     bool _isplaying, _isActive;
     readonly Brush _deleteBrush = new SolidColorBrush(Color.FromArgb(96, 128, 0, 0));
 
     public VideoUC() => InitializeComponent();
-    public VideoUC(string item) : this() => _vf = item;
+    public VideoUC(string item, string[] targetDirSuffixes) : this()
+    {
+      _vf = item;
+      _targetDirSuffixes = targetDirSuffixes;
+    }
+
     async void onLoaded(object s, RoutedEventArgs e)
     {
       me1.ToolTip =
@@ -23,7 +29,7 @@ namespace VideoSorter.Views
 
       me1.Source = new Uri(_vf);
       me1.Play();
-      await Task.Delay(100);
+      await Task.Delay(50);
       me1.Pause();
       PreviewKeyDown += VideoUC_PreviewKeyDown;
     }
@@ -81,32 +87,41 @@ namespace VideoSorter.Views
     void onSort(object s, RoutedEventArgs e) => moveAccordingly(((Button)s).Content.ToString().Trim());
     void moveAccordingly(string whereTo)
     {
-      var sort = new[] { "best", "soso", "grbg" };
-      var trg = "";
-
-      foreach (var srt in sort)
-        trg = _vf.Replace($@"\{srt}\", @"\");
-
-      var trgp = System.IO.Path.GetDirectoryName(trg);
-      var trgf = System.IO.Path.GetFileName(trg);
-
-      switch (whereTo)
+      try
       {
-        case "_1": trg = System.IO.Path.Combine(trgp, sort[0], trgf); break;
-        case "_2": trg = System.IO.Path.Combine(trgp, sort[0], trgf); break;
-        case "_3": trg = System.IO.Path.Combine(trgp, sort[0], trgf); break;
-        default: break;
-      }
+        var trg = "";
 
-      pnlFilename.Visibility = Visibility.Visible;
-      pnlFilename.Background = _deleteBrush;
-      if (MessageBox.Show($"Moving from/to\n\n  {_vf}\n\n  {trg}", "Are you sure?", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+        foreach (var srt in _targetDirSuffixes)
+          trg = _vf.Replace($@"\{srt}\", @"\");
+
+        var trgp = System.IO.Path.GetDirectoryName(trg);
+        var trgf = System.IO.Path.GetFileName(trg);
+
+        switch (whereTo)
+        {
+          case "1": trg = System.IO.Path.Combine(trgp, _targetDirSuffixes[0], trgf); break;
+          case "2": trg = System.IO.Path.Combine(trgp, _targetDirSuffixes[1], trgf); break;
+          case "3": trg = System.IO.Path.Combine(trgp, _targetDirSuffixes[2], trgf); break;
+          default: break;
+        }
+
+        pnlFilename.Visibility = Visibility.Visible;
+        pnlFilename.Background = _deleteBrush;
+        Debug.WriteLine($"Moving from/to\n  {_vf}\n  {trg}");
+        //if (MessageBox.Show($"Moving from/to\n\n  {_vf}\n\n  {trg}", "Are you sure?", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+        {
+          System.IO.File.Move(_vf, trg);
+          Width = Height = 0;
+        }
+      }
+      catch (Exception ex)
       {
-        //System.IO.File.Move(_vf, trg);
-        Width = Height = 0;
+        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
       }
-
-      pnlFilename.Background = Brushes.Transparent;
+      finally
+      {
+        pnlFilename.Background = Brushes.Transparent;
+      }
     }
 
     void onMouseDoubleClick(object s, MouseButtonEventArgs e) => RestartFromBegining();

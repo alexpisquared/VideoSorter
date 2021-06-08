@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -9,21 +10,31 @@ namespace VideoSorter
   public partial class MainWindow : Window
   {
     const int _max = 96;
+    readonly string[] _targetDirSuffixes = new[] { "best", "soso", "grbg" };
     public MainWindow() => InitializeComponent();
 
     async void onLoaded(object s, RoutedEventArgs e)
     {
+      var src = Environment.GetCommandLineArgs()[1];
+
+      foreach (var sfx in _targetDirSuffixes)
+      {
+        if (!Directory.Exists(Path.Combine(src, sfx)))
+         Directory.CreateDirectory(Path.Combine(src, sfx));
+      }
+
       var i = 0;
-      foreach (var filename in Directory.GetFiles(@"C:\Users\alexp\OneDrive\Pictures\Camera Roll 1\SurfSkate", "*.mp4"))
+      foreach (var filename in Directory.GetFiles(src, "*.mp4"))
       {
         if (++i > _max) break;
 
-        var rr = new VideoUC(filename);
-        rr.Focusable = true;
-        wp1.Children.Add(rr); // { VideoFile = filename });// ;
+        var vc = new VideoUC(filename, _targetDirSuffixes);
+        wp1.Children.Add(vc);
 
-        await Task.Delay(200);
+        await Task.Delay(300);
       }
+
+      System.Media.SystemSounds.Asterisk.Play();
     }
 
     void onTglPlay(object s, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.IsPlaying = !vp.IsPlaying; } }
