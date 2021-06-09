@@ -22,13 +22,12 @@ namespace VideoSorter.Views
     {
       _vf = item;
       _targetDirSuffixes = targetDirSuffixes;
-      var _timer = new DispatcherTimer(TimeSpan.FromSeconds(.333), DispatcherPriority.Background, new EventHandler((s, e) => tick()), Dispatcher.CurrentDispatcher);//tu: one-line timer	C:\g\BMO-Bid\Src\OLP.DAQ\Logic\ProgrDemo.cs	17	5	C:\g\BMO-Bid\Src\OLP.DAQ\Logic
+      var _timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, new EventHandler((s, e) => tick()), Dispatcher.CurrentDispatcher);//tu: one-line timer	C:\g\BMO-Bid\Src\OLP.DAQ\Logic\ProgrDemo.cs	17	5	C:\g\BMO-Bid\Src\OLP.DAQ\Logic
     }
 
     async void onLoaded(object s, RoutedEventArgs e)
     {
-      me1.ToolTip =
-      tbkFilename.Text = System.IO.Path.GetFileNameWithoutExtension(_vf);
+      me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(_vf);
 
       me1.Source = new Uri(_vf);
       me1.Play();
@@ -37,7 +36,7 @@ namespace VideoSorter.Views
       PreviewKeyDown += onPreviewKeyDown;
     }
 
-    void tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N1} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";
+    void tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N0} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";
 
     public string VideoFile { get => _vf; internal set => tbkFilename.Text = _vf = value; }
     public bool IsAcitve
@@ -67,13 +66,15 @@ namespace VideoSorter.Views
     {
       var rp = new RenamerPopup();
       var prev = rp.FileName = System.IO.Path.GetFileNameWithoutExtension(_vf);
-      //rp.Owner = this;
+      rp.Owner = WpfUtils.FindParentWindow(this);
       var rv = rp.ShowDialog();
       if (rv == true)
       {
         var nvf = _vf.Replace(prev, rp.FileName);
         File.Move(_vf, nvf);
         _vf = nvf;
+        me1.Source = new Uri(_vf);
+        me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(_vf);
       }
     }
 
@@ -141,5 +142,18 @@ namespace VideoSorter.Views
     void Bold_Checked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Bold;
     void Bold_Unchecked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Normal;
 
+  }
+  public static class WpfUtils
+  {
+    public static Window FindParentWindow(FrameworkElement element)
+    {
+      if (element.Parent == null) return null;
+
+      if (element.Parent as Window != null) return element.Parent as Window;
+
+      if (element.Parent as FrameworkElement != null) return FindParentWindow(element.Parent as FrameworkElement);
+
+      return null;
+    }
   }
 }

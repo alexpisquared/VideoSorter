@@ -5,18 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VideoSorter.Views"
         mc:Ignorable="d"
-        Title="RenamerPopup" Height="200" Width="600">
+        Title="RenamerPopup" Height="200" Width="600" Topmost="True" Background="#888" WindowStartupLocation="CenterOwner">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="109*"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <TextBox x:Name="tbxName" d:Text="IXL123221.828828" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="50" FontSize="20" />
+    <TextBox x:Name="tbxName" d:Text="IXL123221.828828" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="50 20" FontSize="20" />
 
-    <StackPanel Grid.Row="1" x:Name="controlPanel1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Background="#8000" >
-      <Button Margin="5" Content="_OK"      IsDefault="True"  Click="onSave"   Width="60" />
-      <Button Margin="5" Content="_Cancel"  IsCancel="True"   Click="onJump" Width="60" />
+    <StackPanel Grid.Row="1" x:Name="controlPanel1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" >
+      <Button Margin="5" Content="_OK"      IsDefault="True"  Click="onSave" Width="60" Height="32"/>
+      <Button Margin="5" Content="_Cancel"  IsCancel="True"   Click="onJump" Width="60" Height="32" />
     </StackPanel>
 
   </Grid>

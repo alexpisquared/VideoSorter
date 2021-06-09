@@ -34,7 +34,7 @@ namespace VideoSorter
         await Task.Delay(300);
       }
 
-      tbkReport.Text = $"{i} files loaded";
+      tbkReport.Text = $"  {i} files  ";
 
       System.Media.SystemSounds.Asterisk.Play();
     }
