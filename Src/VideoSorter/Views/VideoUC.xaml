@@ -7,7 +7,8 @@
              KeyDown="onKey___"
              PreviewKeyUp="onKey___"
              PreviewKeyDown="onKey___"
-             Focusable="True">
+             Focusable="True" 
+             ToolTip="DblClick - Re-Start">
   <UserControl.ContextMenu>
     <ContextMenu>
       <MenuItem Header="_1 move to Bests"   Click="onSort" Foreground="#c00" />
@@ -36,8 +37,6 @@
       <TextBlock  x:Name="tbkFilename" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Center" Foreground="#ff0" d:Text="lkjlkj lkjlkj lkjlkj lkjlkj .mp4" />
     </Grid>
 
-    <TextBlock    Grid.Row="1" x:Name="tbkDuration" TextWrapping="Wrap" VerticalAlignment="Top"    HorizontalAlignment="Right"   Foreground="#ff0" d:Text="22:22" FontSize="18" Margin="5" Background="#4000" />
-
     <StackPanel   Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top"    HorizontalAlignment="Left"  Margin="5" >
       <Button Content="1" Padding="0 0 0 3" Height="40" Width="40" Click="onSort" Background="#80f0" Margin="2"  ToolTip="Move to Best folder" >
         <Button.Resources>
@@ -60,8 +59,15 @@
           </Style>
         </Button.Resources>
       </Button>
-
     </StackPanel>
+
+    <Menu Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Background="#4000" Foreground="#00f">
+      <MenuItem Header="_More" >
+        <MenuItem Header="Re-Start" />
+      </MenuItem>
+    </Menu>
+    
+    <TextBlock    Grid.Row="1" x:Name="tbkDuration" TextWrapping="Wrap" VerticalAlignment="Top"    HorizontalAlignment="Right"   Foreground="#ff0" d:Text="22:22" FontSize="18" Margin="5" Background="#4000" />
 
   </Grid>
 </UserControl>
