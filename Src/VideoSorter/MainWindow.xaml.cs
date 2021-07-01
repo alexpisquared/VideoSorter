@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -11,7 +12,10 @@ namespace VideoSorter
   {
     const int _max = 512;
     readonly string[] _targetDirSuffixes = new[] { "best", "soso", "grbg" };
-    public MainWindow() => InitializeComponent();
+    public MainWindow()
+    {
+      InitializeComponent();
+    }
 
     async void onLoaded(object s, RoutedEventArgs e)
     {
@@ -20,16 +24,18 @@ namespace VideoSorter
       foreach (var sfx in _targetDirSuffixes)
       {
         if (!Directory.Exists(Path.Combine(src, sfx)))
-         Directory.CreateDirectory(Path.Combine(src, sfx));
+          Directory.CreateDirectory(Path.Combine(src, sfx));
       }
 
+      var files = Directory.GetFiles(src, "*.mp4");
       var i = 0;
-      foreach (var filename in Directory.GetFiles(src, "*.mp4"))
+      foreach (var filename in files)
       {
         if (++i > _max) break;
 
-        var vc = new VideoUC(filename, _targetDirSuffixes);
-        wp1.Children.Add(vc);
+        wrapPnl.Children.Add(new VideoUC(filename, _targetDirSuffixes));
+
+        tbkReport.Text = $"  {i} / {files.Length} files  ";
 
         await Task.Delay(300);
       }
@@ -39,9 +45,9 @@ namespace VideoSorter
       System.Media.SystemSounds.Asterisk.Play();
     }
     void onDragMove(object s, MouseButtonEventArgs e) => DragMove();
-    void onTglPlay(object s, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.IsPlaying = !vp.IsPlaying; } }
-    void onToStart(object s, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.RestartFromBegining(); } }
-    void onPausAll(object s, RoutedEventArgs e) { foreach (VideoUC vp in wp1.Children) { vp.Pause(); } }
+    void onTglPlay(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { /*vp.IsPlayingAll = !vp.IsPlayingAll*/; } }
+    void onToStart(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.RestartFromBegining(); } }
+    void onPausAll(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.paus(); } }
     void onClose(object s, RoutedEventArgs e) { Close(); ; }
   }
 }

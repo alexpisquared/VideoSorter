@@ -15,7 +15,8 @@ namespace VideoSorter.Views
   {
     string _vf;
     readonly string[] _targetDirSuffixes;
-    bool _isplaying, _isActive;
+    bool _isplaying, _isPlaying;
+    private bool _wasPlaying;
     readonly Brush _deleteBrush = new SolidColorBrush(Color.FromArgb(96, 128, 0, 0));
     readonly DoubleAnimation _da = new DoubleAnimation();
 
@@ -34,49 +35,29 @@ namespace VideoSorter.Views
       me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(_vf);
 
       me1.Source = new Uri(_vf);
-      me1.Play();
-      await Task.Delay(50);
-      me1.Pause();
+      me1.Play(); await Task.Delay(50); me1.Pause();
       PreviewKeyDown += onPreviewKeyDown;
     }
     public static readonly DependencyProperty AnimPosnProperty = DependencyProperty.Register("AnimPosn", typeof(double), typeof(VideoUC), new PropertyMetadata(.0/*, new PropertyChangedCallback(onAnimPosnChngd)*/)); public double AnimPosn { get => (double)GetValue(AnimPosnProperty); set => SetValue(AnimPosnProperty, value); } //static void onAnimPosnChngd(DependencyObject d, DependencyPropertyChangedEventArgs e) { _da.From = (double)e.OldValue; _da.To = (double)e.NewValue; (d as VideoUC).BeginAnimation(AnimPosnProperty, _da); }
 
     void onStartAnime() => ApplyAnimationClock(AnimPosnProperty, _da.CreateClock());
-    void onPauseAnime()
+    void onPauseAnime(TimeSpan position)
     {
       ApplyAnimationClock(AnimPosnProperty, null);
-      _da.From = praDuration.Value = me1.Position.TotalSeconds;
+      _da.From = praDuration.Value = position.TotalSeconds;
       _da.To = praDuration.Maximum = sldDuration.Maximum = me1.NaturalDuration.TimeSpan.TotalSeconds;
-      _da.Duration = me1.NaturalDuration.TimeSpan - me1.Position;
+      _da.Duration = me1.NaturalDuration.TimeSpan - position;
     }
 
     void tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N0} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";//prgDuration.Maximum = me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 100;//prgDuration.Value = me1.Position.TotalSeconds;
 
     public string VideoFile { get => _vf; internal set => tbkFilename.Text = _vf = value; }
-    public bool IsAcitve
-    {
-      get => _isActive;
-      set
-      {
-        _isActive = value;
-        if (value)
-        {
-          pnlFilename.Visibility = Visibility.Collapsed;
-          me1.Play();
-          onStartAnime();
-        }
-        else
-        {
-          pnlFilename.Visibility = Visibility.Visible;
-          me1.Pause();
-          onPauseAnime();
-        }
-      }
-    }
-    public bool IsPlaying { get => _isplaying; set { _isplaying = value; if (value && IsAcitve) me1.Play(); else me1.Pause(); } }
+    public bool IsPlaying { get => _isPlaying; set { if (_isPlaying = value) play(); else paus(); } }
 
-    internal void Pause() { _isplaying = false; me1.Pause(); }
-    internal void RestartFromBegining() { me1.Stop(); if (IsAcitve) me1.Play(); }
+    internal void play() { _isplaying = true; pnlFilename.Visibility = Visibility.Collapsed; me1.Play(); onStartAnime(); }
+    internal void paus() { _isplaying = false; pnlFilename.Visibility = Visibility.Visible; me1.Pause(); onPauseAnime(me1.Position); }
+    internal void RestartFromBegining() { me1.Stop(); if (IsPlaying) me1.Play(); }
+    //public bool IsPlayingAll { get => _isplaying; set { _isplaying = value; if (value && IsPlaying) me1.Play(); else me1.Pause(); } }
 
     void onRename(object s, RoutedEventArgs e)
     {
@@ -108,7 +89,7 @@ namespace VideoSorter.Views
     }
     void me1_MediaFailed(object s, ExceptionRoutedEventArgs e) => tbkDuration.Text = $"{e.ErrorException.Message}";
 
-    void onMouseLeftButtonDown(object s, MouseButtonEventArgs e) => IsAcitve = !IsAcitve;
+    void onMouseLeftButtonDown(object s, MouseButtonEventArgs e) => IsPlaying = !IsPlaying;
     void onMouseDoubleClick(object s, MouseButtonEventArgs e) => RestartFromBegining();
     void onSort(object s, RoutedEventArgs e) => moveAccordingly(((Button)s).Content.ToString().Trim());
     void moveAccordingly(string whereTo)
@@ -166,14 +147,11 @@ namespace VideoSorter.Views
     }
     void Bold_Checked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Bold;
 
-    void sldDuration_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-    {
-      //if (IsPlaying || IsAcitve) return;
-      me1.Position = TimeSpan.FromSeconds(e.NewValue);
-    }
+    async void onSliderChanged(object s, RoutedPropertyChangedEventArgs<double> e) { Trace.Write("|"); me1.Position = TimeSpan.FromSeconds(e.NewValue); onPauseAnime(me1.Position); me1.Play(); await Task.Delay(50); me1.Pause(); }
+    void onSliderPreviewMouseDn(object s, MouseButtonEventArgs e) { Trace.WriteLine("\r▀▄▄▄"); _wasPlaying = _isplaying; paus(); }
+    void onSliderPreviewMouseUp(object s, MouseButtonEventArgs e) { Trace.WriteLine("\n▄▀▀▀"); if (_wasPlaying) play(); }
 
     void Bold_Unchecked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Normal;
-
   }
   public static class WpfUtils
   {
