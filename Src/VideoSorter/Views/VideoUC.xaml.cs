@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace VideoSorter.Views
@@ -16,14 +17,28 @@ namespace VideoSorter.Views
     private readonly string[] _targetDirSuffixes;
     bool _isplaying, _isActive;
     readonly Brush _deleteBrush = new SolidColorBrush(Color.FromArgb(96, 128, 0, 0));
+    readonly DoubleAnimation _da = new DoubleAnimation();
 
-    public VideoUC() => InitializeComponent();
+    public VideoUC()
+    {
+      InitializeComponent();
+    }
     public VideoUC(string item, string[] targetDirSuffixes) : this()
     {
       _vf = item;
       _targetDirSuffixes = targetDirSuffixes;
-      var _timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, new EventHandler((s, e) => tick()), Dispatcher.CurrentDispatcher);//tu: one-line timer	C:\g\BMO-Bid\Src\OLP.DAQ\Logic\ProgrDemo.cs	17	5	C:\g\BMO-Bid\Src\OLP.DAQ\Logic
+      _ = new DispatcherTimer(TimeSpan.FromSeconds(.1), DispatcherPriority.Background, new EventHandler((s, e) => tick()), Dispatcher.CurrentDispatcher);//tu: one-line timer	C:\g\BMO-Bid\Src\OLP.DAQ\Logic\ProgrDemo.cs	17	5	C:\g\BMO-Bid\Src\OLP.DAQ\Logic
     }
+
+    void onStartAnime() => ApplyAnimationClock(AnimPosnProperty, _da.CreateClock());
+    void onPauseAnime()
+    {
+      ApplyAnimationClock(AnimPosnProperty, null);
+      _da.From = praDuration.Value = me1.Position.TotalSeconds;
+      _da.To = praDuration.Maximum = me1.NaturalDuration.TimeSpan.TotalSeconds;
+      _da.Duration = me1.NaturalDuration.TimeSpan - me1.Position;
+    }
+    public static readonly DependencyProperty AnimPosnProperty = DependencyProperty.Register("AnimPosn", typeof(double), typeof(VideoUC), new PropertyMetadata(.0/*, new PropertyChangedCallback(onAnimPosnChngd)*/)); public double AnimPosn { get => (double)GetValue(AnimPosnProperty); set => SetValue(AnimPosnProperty, value); } //static void onAnimPosnChngd(DependencyObject d, DependencyPropertyChangedEventArgs e) { _da.From = (double)e.OldValue; _da.To = (double)e.NewValue; (d as VideoUC).BeginAnimation(AnimPosnProperty, _da); }
 
     async void onLoaded(object s, RoutedEventArgs e)
     {
@@ -36,7 +51,7 @@ namespace VideoSorter.Views
       PreviewKeyDown += onPreviewKeyDown;
     }
 
-    void tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N0} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";
+    void tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N0} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";//prgDuration.Maximum = me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 100;//prgDuration.Value = me1.Position.TotalSeconds;
 
     public string VideoFile { get => _vf; internal set => tbkFilename.Text = _vf = value; }
     public bool IsAcitve
@@ -49,11 +64,13 @@ namespace VideoSorter.Views
         {
           pnlFilename.Visibility = Visibility.Collapsed;
           me1.Play();
+          onStartAnime();
         }
         else
         {
           pnlFilename.Visibility = Visibility.Visible;
           me1.Pause();
+          onPauseAnime();
         }
       }
     }
@@ -64,7 +81,7 @@ namespace VideoSorter.Views
 
     void onRename(object s, RoutedEventArgs e)
     {
-      var rp = new RenamerPopup();
+      RenamerPopup rp = new RenamerPopup();
       var prev = rp.FileName = System.IO.Path.GetFileNameWithoutExtension(_vf);
       rp.Owner = WpfUtils.FindParentWindow(this);
       var rv = rp.ShowDialog();
@@ -79,7 +96,17 @@ namespace VideoSorter.Views
     }
 
     void me1_Loaded(object s, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $"{me1.NaturalDuration.TimeSpan:mm\\:ss} Loed"; }
-    void me1_MediaOpened(object s, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $" {me1.NaturalDuration.TimeSpan.TotalSeconds:N0} "; }
+    void me1_MediaOpened(object s, RoutedEventArgs e)
+    {
+      if (me1.NaturalDuration.HasTimeSpan)
+      {
+        _da.From = 0;
+        _da.To = praDuration.Maximum = me1.NaturalDuration.TimeSpan.TotalSeconds;
+        _da.Duration = me1.NaturalDuration.TimeSpan;
+
+        tbkDuration.Text = $" {me1.NaturalDuration.TimeSpan.TotalSeconds:N0} ";
+      }
+    }
     void me1_MediaFailed(object s, ExceptionRoutedEventArgs e) => tbkDuration.Text = $"{e.ErrorException.Message}";
 
     void onMouseLeftButtonDown(object s, MouseButtonEventArgs e) => IsAcitve = !IsAcitve;
