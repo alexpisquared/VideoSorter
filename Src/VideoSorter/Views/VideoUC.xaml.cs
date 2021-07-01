@@ -14,7 +14,7 @@ namespace VideoSorter.Views
   public partial class VideoUC : UserControl
   {
     string _vf;
-    private readonly string[] _targetDirSuffixes;
+    readonly string[] _targetDirSuffixes;
     bool _isplaying, _isActive;
     readonly Brush _deleteBrush = new SolidColorBrush(Color.FromArgb(96, 128, 0, 0));
     readonly DoubleAnimation _da = new DoubleAnimation();
@@ -29,17 +29,6 @@ namespace VideoSorter.Views
       _targetDirSuffixes = targetDirSuffixes;
       _ = new DispatcherTimer(TimeSpan.FromSeconds(.1), DispatcherPriority.Background, new EventHandler((s, e) => tick()), Dispatcher.CurrentDispatcher);//tu: one-line timer	C:\g\BMO-Bid\Src\OLP.DAQ\Logic\ProgrDemo.cs	17	5	C:\g\BMO-Bid\Src\OLP.DAQ\Logic
     }
-
-    void onStartAnime() => ApplyAnimationClock(AnimPosnProperty, _da.CreateClock());
-    void onPauseAnime()
-    {
-      ApplyAnimationClock(AnimPosnProperty, null);
-      _da.From = praDuration.Value = me1.Position.TotalSeconds;
-      _da.To = praDuration.Maximum = me1.NaturalDuration.TimeSpan.TotalSeconds;
-      _da.Duration = me1.NaturalDuration.TimeSpan - me1.Position;
-    }
-    public static readonly DependencyProperty AnimPosnProperty = DependencyProperty.Register("AnimPosn", typeof(double), typeof(VideoUC), new PropertyMetadata(.0/*, new PropertyChangedCallback(onAnimPosnChngd)*/)); public double AnimPosn { get => (double)GetValue(AnimPosnProperty); set => SetValue(AnimPosnProperty, value); } //static void onAnimPosnChngd(DependencyObject d, DependencyPropertyChangedEventArgs e) { _da.From = (double)e.OldValue; _da.To = (double)e.NewValue; (d as VideoUC).BeginAnimation(AnimPosnProperty, _da); }
-
     async void onLoaded(object s, RoutedEventArgs e)
     {
       me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(_vf);
@@ -49,6 +38,16 @@ namespace VideoSorter.Views
       await Task.Delay(50);
       me1.Pause();
       PreviewKeyDown += onPreviewKeyDown;
+    }
+    public static readonly DependencyProperty AnimPosnProperty = DependencyProperty.Register("AnimPosn", typeof(double), typeof(VideoUC), new PropertyMetadata(.0/*, new PropertyChangedCallback(onAnimPosnChngd)*/)); public double AnimPosn { get => (double)GetValue(AnimPosnProperty); set => SetValue(AnimPosnProperty, value); } //static void onAnimPosnChngd(DependencyObject d, DependencyPropertyChangedEventArgs e) { _da.From = (double)e.OldValue; _da.To = (double)e.NewValue; (d as VideoUC).BeginAnimation(AnimPosnProperty, _da); }
+
+    void onStartAnime() => ApplyAnimationClock(AnimPosnProperty, _da.CreateClock());
+    void onPauseAnime()
+    {
+      ApplyAnimationClock(AnimPosnProperty, null);
+      _da.From = praDuration.Value = me1.Position.TotalSeconds;
+      _da.To = praDuration.Maximum = sldDuration.Maximum = me1.NaturalDuration.TimeSpan.TotalSeconds;
+      _da.Duration = me1.NaturalDuration.TimeSpan - me1.Position;
     }
 
     void tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N0} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";//prgDuration.Maximum = me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 100;//prgDuration.Value = me1.Position.TotalSeconds;
@@ -101,7 +100,7 @@ namespace VideoSorter.Views
       if (me1.NaturalDuration.HasTimeSpan)
       {
         _da.From = 0;
-        _da.To = praDuration.Maximum = me1.NaturalDuration.TimeSpan.TotalSeconds;
+        _da.To = praDuration.Maximum = sldDuration.Maximum = me1.NaturalDuration.TimeSpan.TotalSeconds;
         _da.Duration = me1.NaturalDuration.TimeSpan;
 
         tbkDuration.Text = $" {me1.NaturalDuration.TimeSpan.TotalSeconds:N0} ";
@@ -111,7 +110,6 @@ namespace VideoSorter.Views
 
     void onMouseLeftButtonDown(object s, MouseButtonEventArgs e) => IsAcitve = !IsAcitve;
     void onMouseDoubleClick(object s, MouseButtonEventArgs e) => RestartFromBegining();
-
     void onSort(object s, RoutedEventArgs e) => moveAccordingly(((Button)s).Content.ToString().Trim());
     void moveAccordingly(string whereTo)
     {
@@ -167,6 +165,13 @@ namespace VideoSorter.Views
       }
     }
     void Bold_Checked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Bold;
+
+    void sldDuration_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+      //if (IsPlaying || IsAcitve) return;
+      me1.Position = TimeSpan.FromSeconds(e.NewValue);
+    }
+
     void Bold_Unchecked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Normal;
 
   }
