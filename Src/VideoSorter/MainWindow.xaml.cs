@@ -19,7 +19,10 @@ namespace VideoSorter
 
     async void onLoaded(object s, RoutedEventArgs e)
     {
-      var src = Environment.GetCommandLineArgs()[1];
+      var src =
+        Environment.GetCommandLineArgs().Length > 1 ?
+        Environment.GetCommandLineArgs()[1] :
+        @"C:\Users\alexp\OneDrive\Pictures\Camera Roll 1\SurfSkate";
 
       foreach (var sfx in _targetDirSuffixes)
       {
