@@ -88,6 +88,11 @@ namespace VideoSorter.Views
       }
     }
     void me1_MediaFailed(object s, ExceptionRoutedEventArgs e) => tbkDuration.Text = $"{e.ErrorException.Message}";
+    void me1_MediaEnded(object s, RoutedEventArgs e)
+    {
+      onStartAnime();
+      me1.Position = TimeSpan.Zero;
+    }
 
     void onMouseLeftButtonDown(object s, MouseButtonEventArgs e) => IsPlaying = !IsPlaying;
     void onMouseDoubleClick(object s, MouseButtonEventArgs e) => RestartFromBegining();
@@ -140,6 +145,17 @@ namespace VideoSorter.Views
       switch (e.Key)
       {
         case Key.F2: onRename(s, e); break;
+        case Key.Left:
+          if (e.SystemKey is Key.LeftAlt or Key.RightAlt)           /**/ me1.Position -= TimeSpan.FromSeconds(25);
+          else if (e.SystemKey is Key.LeftCtrl or Key.RightCtrl)    /**/ me1.Position -= TimeSpan.FromSeconds(15);
+          else if (e.SystemKey is Key.LeftShift or Key.RightShift)  /**/ me1.Position -= TimeSpan.FromSeconds(.5);
+          else                                                      /**/ me1.Position -= TimeSpan.FromSeconds(5); break;
+        case Key.Right:
+          if (e.SystemKey is Key.LeftAlt or Key.RightAlt)           /**/ me1.Position += TimeSpan.FromSeconds(25);
+          else if (e.SystemKey is Key.LeftCtrl or Key.RightCtrl)    /**/ me1.Position += TimeSpan.FromSeconds(15);
+          else if (e.SystemKey is Key.LeftShift or Key.RightShift)  /**/ me1.Position += TimeSpan.FromSeconds(.5);
+          else                                                      /**/ me1.Position += TimeSpan.FromSeconds(5); break;
+
         case Key.Home: me1.Position = TimeSpan.Zero; break;
         case Key.Delete: moveAccordingly("3"); break;
         default: tbkFilename.Text = $"This key is new: {e.Key}"; break;

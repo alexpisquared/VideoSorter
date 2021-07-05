@@ -7,7 +7,7 @@
              PreviewKeyUp="onKey___"
              PreviewKeyDown="onKey___"
              Focusable="True" 
-             ToolTip="DblClick - Re-Start" x:Name="wnd">
+             ToolTip="DblClick - Re-Start" x:Name="wnd" Background="#00a">
   <UserControl.ContextMenu>
     <ContextMenu>
       <MenuItem Header="_1 move to Bests"   Click="onSort" Foreground="#c00" />
@@ -18,19 +18,18 @@
       <MenuItem Header="_Bold" IsCheckable="True" Checked="Bold_Checked" Unchecked="Bold_Unchecked" />
     </ContextMenu>
   </UserControl.ContextMenu>
-  <Grid>
+  <Grid Background="#a00">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <MediaElement Grid.Row="1" x:Name="me1" LoadedBehavior="Manual" Margin="5" Loaded="me1_Loaded" MediaOpened="me1_MediaOpened" MediaFailed="me1_MediaFailed" 
+    <MediaElement Grid.Row="1" x:Name="me1" LoadedBehavior="Manual" Loaded="me1_Loaded" MediaOpened="me1_MediaOpened" MediaFailed="me1_MediaFailed" MediaEnded="me1_MediaEnded"
                   KeyUp="onKey___" 
                   KeyDown="onKey___"
                   PreviewKeyUp="onKey___"
-                  PreviewKeyDown="onKey___"
-                  />
+                  PreviewKeyDown="onKey___" />
 
     <Grid         Grid.Row="1" x:Name="pnlFilename" Visibility="Visible" d:Visibility="Visible" Background="#8000">
       <TextBlock  x:Name="tbkFilename" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Center" Foreground="#ff0" d:Text="lkjlkj lkjlkj lkjlkj lkjlkj .mp4" Background="#8000" Padding="15 0" />
