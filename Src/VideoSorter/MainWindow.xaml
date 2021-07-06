@@ -21,13 +21,15 @@
       <WrapPanel  x:Name="wrapPnl" />
     </ScrollViewer>
 
-    <StackPanel   Grid.Row="2" x:Name="controlPanel1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5" Background="#8000" >
-      <Button Margin="10" Content="_Tgl Play" Click="onTglPlay" IsDefault="True" />
-      <Button Margin="10" Content="_Restart"  Click="onToStart" />
-      <Button Margin="10" Content="_Pause"    Click="onPausAll" />
-      <Button Margin="10" Content=" _X "      Click="onClose" IsCancel="True" />
-      <TextBlock x:Name="tbkReport" Text="Loading ... " Foreground="#ff0" VerticalAlignment="Center" />
-    </StackPanel>
+    <Viewbox      Grid.Row="2" Height="100" Stretch="Uniform" HorizontalAlignment="Right" Margin="35" >
+      <StackPanel  Height="50" x:Name="controlPanel1" Orientation="Horizontal" Background="#4000" >
+        <TextBlock x:Name="tbkReport" d:Text="Loading ... " Foreground="#ff0" VerticalAlignment="Center" />
+        <Button Margin="5 10" Content="_Tgl Play" Click="onTglPlay" IsDefault="True" />
+        <Button Margin="5 10" Content="_Restart"  Click="onToStart" />
+        <Button Margin="5 10" Content="_Pause"    Click="onPausAll" />
+        <Button Margin="5 10 10 10" Content=" _X "      Click="onClose" IsCancel="True" />
+      </StackPanel>
+    </Viewbox>
 
   </Grid>
 </Window>

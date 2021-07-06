@@ -11,7 +11,7 @@ namespace VideoSorter
 {
   public partial class MainWindow : Window
   {
-    const int _max = 512;
+    const int _max = 32;
     readonly string[] _targetDirSuffixes = new[] { "best", "soso", "grbg" };
     public MainWindow()
     {
@@ -41,8 +41,8 @@ namespace VideoSorter
         var dirs = Directory.GetDirectories(srcDir);
         if (dirs.Length == 0)
         {
-          tbkInfo.Text = $"No files, nor folders in \n\t {srcDir}.";
-          Process.Start("Explorer.exe", srcDir);
+          tbkInfo.Text = $"No files, nor folders in \n\t {srcDir}.\n\nDrop a better folder here.";
+          _ = Process.Start("Explorer.exe", srcDir);
           return;
         }
 
@@ -78,7 +78,10 @@ namespace VideoSorter
         await Task.Delay(300);
       }
 
-      tbkReport.Text = $"  {loadCount} files loaded out of {videoFiles.Length}. ";
+      tbkReport.Text =
+        loadCount == videoFiles.Length ?
+        $"  {loadCount} files loaded from: \n\t {srcDir}. " :
+        $"  {loadCount} files loaded out of  {videoFiles.Length}  from: \n\t {srcDir}. ";
 
       System.Media.SystemSounds.Asterisk.Play();
     }
