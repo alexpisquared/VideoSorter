@@ -157,6 +157,9 @@ namespace VideoSorter.Views
           else                                                      /**/ me1.Position += TimeSpan.FromSeconds(5); break;
 
         case Key.Home: me1.Position = TimeSpan.Zero; break;
+        case Key.D1: case Key.NumPad1: moveAccordingly("1"); break;
+        case Key.D2: case Key.NumPad2: moveAccordingly("2"); break;
+        case Key.D3: case Key.NumPad3: moveAccordingly("3"); break;
         case Key.Delete: moveAccordingly("3"); break;
         default: tbkFilename.Text = $"This key is new: {e.Key}"; break;
       }
