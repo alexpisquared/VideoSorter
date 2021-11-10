@@ -20,7 +20,7 @@ namespace VideoSorter
       KeyDown += (s, ves) => { switch (ves.Key) { case Key.Escape: Close(); App.Current.Shutdown(); break; } };
     }
 
-    async void onLoaded(object s, RoutedEventArgs e)
+    async void OnLoaded(object s, RoutedEventArgs e)
     {
 #if DEBUG
       Left = -10; Top = 1590;
@@ -30,10 +30,10 @@ namespace VideoSorter
 #endif
       var srcDir = Environment.GetCommandLineArgs().Length > 1 ? Environment.GetCommandLineArgs()[1] : @"C:\Users\alexp\OneDrive\Pictures\Camera Roll 1";
 
-      await tryLoadVideoFiles(srcDir);
+      await TryLoadVideoFiles(srcDir);
     }
 
-    async Task tryLoadVideoFiles(string srcDir)
+    async Task TryLoadVideoFiles(string srcDir)
     {
       var videoFiles = Directory.GetFiles(srcDir, "*.mp4");
       if (videoFiles.Length == 0)
@@ -86,10 +86,10 @@ namespace VideoSorter
       System.Media.SystemSounds.Asterisk.Play();
     }
 
-    void onTglPlay(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { /*vp.IsPlayingAll = !vp.IsPlayingAll*/; } }
-    void onToStart(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.RestartFromBegining(); } }
-    void onPausAll(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.paus(); } }
-    void onClose(object s, RoutedEventArgs e) { Close(); ; }
+    void OnTglPlay(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { /*vp.IsPlayingAll = !vp.IsPlayingAll*/; } }
+    void OnToStart(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.RestartFromBegining(); } }
+    void OnPausAll(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.Paus(); } }
+    void OnClose(object s, RoutedEventArgs e) { Close(); ; }
 
     void Window_DragOver(object sender, DragEventArgs e)
     {
@@ -102,11 +102,11 @@ namespace VideoSorter
       var files = e.Data.GetData(DataFormats.FileDrop) as string[];
       if (files?.Length < 1) return;
 
-      var csv = string.Join("|", files);
+      //var csv = string.Join("|", files);
 
       var srcDir = files.First();
 
-      await tryLoadVideoFiles(srcDir);
+      await TryLoadVideoFiles(srcDir);
     }
   }
 }

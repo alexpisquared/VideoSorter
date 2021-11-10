@@ -18,7 +18,7 @@ namespace VideoSorter.Views
     bool _isplaying, _isPlaying;
     private bool _wasPlaying;
     readonly Brush _deleteBrush = new SolidColorBrush(Color.FromArgb(96, 128, 0, 0));
-    readonly DoubleAnimation _da = new DoubleAnimation();
+    readonly DoubleAnimation _da = new();
 
     public VideoUC()
     {
@@ -28,20 +28,20 @@ namespace VideoSorter.Views
     {
       _vf = item;
       _targetDirSuffixes = targetDirSuffixes;
-      _ = new DispatcherTimer(TimeSpan.FromSeconds(.1), DispatcherPriority.Background, new EventHandler((s, e) => tick()), Dispatcher.CurrentDispatcher);//tu: one-line timer	C:\g\BMO-Bid\Src\OLP.DAQ\Logic\ProgrDemo.cs	17	5	C:\g\BMO-Bid\Src\OLP.DAQ\Logic
+      _ = new DispatcherTimer(TimeSpan.FromSeconds(.1), DispatcherPriority.Background, new EventHandler((s, e) => Tick()), Dispatcher.CurrentDispatcher);//tu: one-line timer	C:\g\BMO-Bid\Src\OLP.DAQ\Logic\ProgrDemo.cs	17	5	C:\g\BMO-Bid\Src\OLP.DAQ\Logic
     }
-    async void onLoaded(object s, RoutedEventArgs e)
+    async void OnLoaded(object s, RoutedEventArgs e)
     {
       me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(_vf);
 
       me1.Source = new Uri(_vf);
       me1.Play(); await Task.Delay(50); me1.Pause();
-      PreviewKeyDown += onPreviewKeyDown;
+      PreviewKeyDown += OnPreviewKeyDown;
     }
     public static readonly DependencyProperty AnimPosnProperty = DependencyProperty.Register("AnimPosn", typeof(double), typeof(VideoUC), new PropertyMetadata(.0/*, new PropertyChangedCallback(onAnimPosnChngd)*/)); public double AnimPosn { get => (double)GetValue(AnimPosnProperty); set => SetValue(AnimPosnProperty, value); } //static void onAnimPosnChngd(DependencyObject d, DependencyPropertyChangedEventArgs e) { _da.From = (double)e.OldValue; _da.To = (double)e.NewValue; (d as VideoUC).BeginAnimation(AnimPosnProperty, _da); }
 
-    void onStartAnime() => ApplyAnimationClock(AnimPosnProperty, _da.CreateClock());
-    void onPauseAnime(TimeSpan position)
+    void OnStartAnime() => ApplyAnimationClock(AnimPosnProperty, _da.CreateClock());
+    void OnPauseAnime(TimeSpan position)
     {
       ApplyAnimationClock(AnimPosnProperty, null);
       _da.From = praDuration.Value = position.TotalSeconds;
@@ -49,19 +49,19 @@ namespace VideoSorter.Views
       _da.Duration = me1.NaturalDuration.TimeSpan - position;
     }
 
-    void tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N0} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";//prgDuration.Maximum = me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 100;//prgDuration.Value = me1.Position.TotalSeconds;
+    void Tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N0} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";//prgDuration.Maximum = me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 100;//prgDuration.Value = me1.Position.TotalSeconds;
 
     public string VideoFile { get => _vf; internal set => tbkFilename.Text = _vf = value; }
-    public bool IsPlaying { get => _isPlaying; set { if (_isPlaying = value) play(); else paus(); } }
+    public bool IsPlaying { get => _isPlaying; set { if (_isPlaying = value) Play(); else Paus(); } }
 
-    internal void play() { _isplaying = true; pnlFilename.Visibility = Visibility.Collapsed; me1.Play(); onStartAnime(); }
-    internal void paus() { _isplaying = false; pnlFilename.Visibility = Visibility.Visible; me1.Pause(); onPauseAnime(me1.Position); }
+    internal void Play() { _isplaying = true; pnlFilename.Visibility = Visibility.Collapsed; me1.Play(); OnStartAnime(); }
+    internal void Paus() { _isplaying = false; pnlFilename.Visibility = Visibility.Visible; me1.Pause(); OnPauseAnime(me1.Position); }
     internal void RestartFromBegining() { me1.Stop(); if (IsPlaying) me1.Play(); }
     //public bool IsPlayingAll { get => _isplaying; set { _isplaying = value; if (value && IsPlaying) me1.Play(); else me1.Pause(); } }
 
-    void onRename(object s, RoutedEventArgs e)
+    void OnRename(object s, RoutedEventArgs e)
     {
-      RenamerPopup rp = new RenamerPopup();
+      RenamerPopup rp = new();
       var prev = rp.FileName = System.IO.Path.GetFileNameWithoutExtension(_vf);
       rp.Owner = WpfUtils.FindParentWindow(this);
       var rv = rp.ShowDialog();
@@ -75,8 +75,8 @@ namespace VideoSorter.Views
       }
     }
 
-    void me1_Loaded(object s, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $"{me1.NaturalDuration.TimeSpan:mm\\:ss} Loed"; }
-    void me1_MediaOpened(object s, RoutedEventArgs e)
+    void Me1_Loaded(object s, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $"{me1.NaturalDuration.TimeSpan:mm\\:ss} Loed"; }
+    void Me1_MediaOpened(object s, RoutedEventArgs e)
     {
       if (me1.NaturalDuration.HasTimeSpan)
       {
@@ -87,17 +87,17 @@ namespace VideoSorter.Views
         tbkDuration.Text = $" {me1.NaturalDuration.TimeSpan.TotalSeconds:N0} ";
       }
     }
-    void me1_MediaFailed(object s, ExceptionRoutedEventArgs e) => tbkDuration.Text = $"{e.ErrorException.Message}";
-    void me1_MediaEnded(object s, RoutedEventArgs e)
+    void Me1_MediaFailed(object s, ExceptionRoutedEventArgs e) => tbkDuration.Text = $"{e.ErrorException.Message}";
+    void Me1_MediaEnded(object s, RoutedEventArgs e)
     {
-      onStartAnime();
+      OnStartAnime();
       me1.Position = TimeSpan.Zero;
     }
 
-    void onMouseLeftButtonDown(object s, MouseButtonEventArgs e) => IsPlaying = !IsPlaying;
-    void onMouseDoubleClick(object s, MouseButtonEventArgs e) => RestartFromBegining();
-    void onSort(object s, RoutedEventArgs e) => moveAccordingly(((Button)s).Content.ToString().Trim());
-    void moveAccordingly(string whereTo)
+    void OnMouseLeftButtonDown(object s, MouseButtonEventArgs e) => IsPlaying = !IsPlaying;
+    void OnMouseDoubleClick(object s, MouseButtonEventArgs e) => RestartFromBegining();
+    void OnSort(object s, RoutedEventArgs e) => MoveAccordingly(((Button)s).Content.ToString().Trim());
+    void MoveAccordingly(string whereTo)
     {
       try
       {
@@ -138,13 +138,13 @@ namespace VideoSorter.Views
       }
     }
 
-    void onPreviewKeyDown(object s, KeyEventArgs e) => tbkFilename.Text = $"PreviewKeyDown (off Loaded): {e.Key}";
-    void onKey___(object s, KeyEventArgs e)
+    void OnPreviewKeyDown(object s, KeyEventArgs e) => tbkFilename.Text = $"PreviewKeyDown (off Loaded): {e.Key}";
+    void OnKey___(object s, KeyEventArgs e)
     {
       Debug.WriteLine("");
       switch (e.Key)
       {
-        case Key.F2: onRename(s, e); break;
+        case Key.F2: OnRename(s, e); break;
         case Key.Left:
           if (e.SystemKey is Key.LeftAlt or Key.RightAlt)           /**/ me1.Position -= TimeSpan.FromSeconds(25);
           else if (e.SystemKey is Key.LeftCtrl or Key.RightCtrl)    /**/ me1.Position -= TimeSpan.FromSeconds(15);
@@ -157,18 +157,18 @@ namespace VideoSorter.Views
           else                                                      /**/ me1.Position += TimeSpan.FromSeconds(5); break;
 
         case Key.Home: me1.Position = TimeSpan.Zero; break;
-        case Key.D1: case Key.NumPad1: moveAccordingly("1"); break;
-        case Key.D2: case Key.NumPad2: moveAccordingly("2"); break;
-        case Key.D3: case Key.NumPad3: moveAccordingly("3"); break;
-        case Key.Delete: moveAccordingly("3"); break;
+        case Key.D1: case Key.NumPad1: MoveAccordingly("1"); break;
+        case Key.D2: case Key.NumPad2: MoveAccordingly("2"); break;
+        case Key.D3: case Key.NumPad3: MoveAccordingly("3"); break;
+        case Key.Delete: MoveAccordingly("3"); break;
         default: tbkFilename.Text = $"This key is new: {e.Key}"; break;
       }
     }
     void Bold_Checked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Bold;
 
-    async void onSliderChanged(object s, RoutedPropertyChangedEventArgs<double> e) { Trace.Write("|"); me1.Position = TimeSpan.FromSeconds(e.NewValue); onPauseAnime(me1.Position); me1.Play(); await Task.Delay(50); me1.Pause(); }
-    void onSliderPreviewMouseDn(object s, MouseButtonEventArgs e) { Trace.WriteLine("\r▀▄▄▄"); _wasPlaying = _isplaying; paus(); }
-    void onSliderPreviewMouseUp(object s, MouseButtonEventArgs e) { Trace.WriteLine("\n▄▀▀▀"); if (_wasPlaying) play(); }
+    async void OnSliderChanged(object s, RoutedPropertyChangedEventArgs<double> e) { Trace.Write("|"); me1.Position = TimeSpan.FromSeconds(e.NewValue); OnPauseAnime(me1.Position); me1.Play(); await Task.Delay(50); me1.Pause(); }
+    void OnSliderPreviewMouseDn(object s, MouseButtonEventArgs e) { Trace.WriteLine("\r▀▄▄▄"); _wasPlaying = _isplaying; Paus(); }
+    void OnSliderPreviewMouseUp(object s, MouseButtonEventArgs e) { Trace.WriteLine("\n▄▀▀▀"); if (_wasPlaying) Play(); }
 
     void Bold_Unchecked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Normal;
   }
