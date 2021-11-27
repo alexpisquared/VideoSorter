@@ -23,7 +23,7 @@ namespace VideoSorter
     async void OnLoaded(object s, RoutedEventArgs e)
     {
 #if DEBUG
-      Left = -10; Top = 1590;
+      Left = Top = -8;
 #else
       WindowStartupLocation = WindowStartupLocation.CenterScreen;
       WindowState = WindowState.Maximized;
