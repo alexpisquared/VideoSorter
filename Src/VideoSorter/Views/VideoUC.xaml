@@ -48,7 +48,14 @@
           </Style>
         </Button.Resources>
       </Button>
-      <Button Content="3" Padding="0 0 0 3" Height="40" Width="40" Click="OnSort" Background="#8f00" Margin="2"  ToolTip="Move to Garbaage folder" >
+      <Button Content="3" Padding="0 0 0 3" Height="40" Width="40" Click="OnSort" Background="#8a00" Margin="2"  ToolTip="Move to Garbaage folder" >
+        <Button.Resources>
+          <Style TargetType="{x:Type Border}">
+            <Setter Property="CornerRadius" Value="25"/>
+          </Style>
+        </Button.Resources>
+      </Button>
+      <Button Content="Dlt" Padding="0 0 0 3" Height="40" Width="40" Click="OnSort" Background="#8f00" Margin="2"  ToolTip="Delete forever" >
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="25"/>
