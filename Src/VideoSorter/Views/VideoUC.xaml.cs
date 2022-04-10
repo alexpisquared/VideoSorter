@@ -12,24 +12,24 @@ public partial class VideoUC : UserControl
   readonly DoubleAnimation _da = new();
 
   public VideoUC() => InitializeComponent();
-  public VideoUC(string item, string[] targetDirSuffixes) : this()
+  public VideoUC(string vfn, string[] targetDirSuffixes) : this()
   {
-    _vf = item;
+    Vf = vfn;
     _targetDirSuffixes = targetDirSuffixes;
     _ = new DispatcherTimer(TimeSpan.FromSeconds(.1), DispatcherPriority.Background, new EventHandler((s, e) => Tick()), Dispatcher.CurrentDispatcher);//tu: one-line timer	C:\g\BMO-Bid\Src\OLP.DAQ\Logic\ProgrDemo.cs	17	5	C:\g\BMO-Bid\Src\OLP.DAQ\Logic
   }
   async void OnLoaded(object s, RoutedEventArgs e)
   {
-    me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(_vf);
+    me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(Vf);
 
     tbkQA.Foreground = 
-      _vf.Contains(Consts._targetDirSuffixes[0]) ? Brushes.Green : 
-      _vf.Contains(Consts._targetDirSuffixes[1]) ? Brushes.Yellow : 
-      _vf.Contains(Consts._targetDirSuffixes[2]) ? Brushes.Red : Brushes.White;
+      Vf.Contains(Consts._targetDirSuffixes[0]) ? Brushes.Green : 
+      Vf.Contains(Consts._targetDirSuffixes[1]) ? Brushes.Yellow : 
+      Vf.Contains(Consts._targetDirSuffixes[2]) ? Brushes.Red : Brushes.White;
 
-    tbkQA.Text = _vf.Split('\\')[^2];
+    tbkQA.Text = Vf.Split('\\')[^2];
 
-    me1.Source = new Uri(_vf);
+    me1.Source = new Uri(Vf);
     me1.Play(); await Task.Delay(50); me1.Pause();
     PreviewKeyDown += OnPreviewKeyDown;
   }
@@ -46,8 +46,10 @@ public partial class VideoUC : UserControl
 
   void Tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N0} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";//prgDuration.Maximum = me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 100;//prgDuration.Value = me1.Position.TotalSeconds;
 
-  public string VideoFile { get => _vf; internal set => tbkFilename.Text = _vf = value; }
+  public string VideoFile { get => Vf; internal set => tbkFilename.Text = Vf = value; }
   public bool IsPlaying { get => _isPlaying; set { if (_isPlaying = value) Play(); else Paus(); } }
+
+  public string Vf { get => _vf; set => _vf = value; }
 
   internal void Play() { _isplaying = true; pnlFilename.Visibility = Visibility.Collapsed; me1.Play(); OnStartAnime(); }
   internal void Paus() { _isplaying = false; pnlFilename.Visibility = Visibility.Visible; me1.Pause(); OnPauseAnime(me1.Position); }
@@ -57,16 +59,16 @@ public partial class VideoUC : UserControl
   void OnRename(object s, RoutedEventArgs e)
   {
     RenamerPopup rp = new();
-    var prev = rp.FileName = Path.GetFileNameWithoutExtension(_vf);
+    var prev = rp.FileName = Path.GetFileNameWithoutExtension(Vf);
     rp.Owner = WpfUtils.FindParentWindow(this);
     var rv = rp.ShowDialog();
     if (rv == true)
     {
-      var nvf = _vf.Replace(prev, rp.FileName);
-      File.Move(_vf, nvf);
-      _vf = nvf;
-      me1.Source = new Uri(_vf);
-      me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(_vf);
+      var nvf = Vf.Replace(prev, rp.FileName);
+      File.Move(Vf, nvf);
+      Vf = nvf;
+      me1.Source = new Uri(Vf);
+      me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(Vf);
     }
   }
 
@@ -101,7 +103,7 @@ public partial class VideoUC : UserControl
       var trg = "";
 
       foreach (var srt in _targetDirSuffixes)
-        trg = _vf.Replace($@"\{srt}\", @"\");
+        trg = Vf.Replace($@"\{srt}\", @"\");
 
       var trgp = Path.GetDirectoryName(trg);
       var trgf = Path.GetFileName(trg);
@@ -116,15 +118,15 @@ public partial class VideoUC : UserControl
 
       pnlFilename.Visibility = Visibility.Visible;
       pnlFilename.Background = _deleteBrush;
-      Debug.WriteLine($"Moving from/to\n  {_vf}\n  {trg}");
+      Debug.WriteLine($"Moving from/to\n  {Vf}\n  {trg}");
       if (whereTo == "Dlt")
       {
-        if (MessageBox.Show($"Deleting \n\n  {_vf}", "Are you sure?", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-          File.Delete(_vf);
+        if (MessageBox.Show($"Deleting \n\n  {Vf}", "Are you sure?", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+          File.Delete(Vf);
       }
       else
       {
-        File.Move(_vf, trg);
+        File.Move(Vf, trg);
         Width = Height = 0;
       }
     }

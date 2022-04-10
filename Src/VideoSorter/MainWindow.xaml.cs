@@ -84,6 +84,7 @@ public partial class MainWindow : Window
 
     rrr:
     foreach (var sfx in Consts._targetDirSuffixes) if (!Directory.Exists(Path.Combine(srcDir, sfx))) Directory.CreateDirectory(Path.Combine(srcDir, sfx));
+    cbxDays.Items.Clear();
     var loadCount = 0;
     foreach (var filename in videoFiles.OrderBy(r => r))
     {
@@ -92,6 +93,10 @@ public partial class MainWindow : Window
       wrapPnl.Children.Add(new VideoUC(filename, Consts._targetDirSuffixes));
 
       tbkReport.Text = $"  {loadCount} / {videoFiles.Length} files  ";
+
+      var fd = filename.Split('_')[1];
+      if (!cbxDays.Items.Contains(fd))
+        cbxDays.Items.Add(fd);
 
       await Task.Delay(300);
     }
@@ -102,5 +107,20 @@ public partial class MainWindow : Window
       $"  {loadCount} files loaded out of  {videoFiles.Length}  from: \n\t {srcDir}. ";
 
     System.Media.SystemSounds.Asterisk.Play();
+  }
+
+  void cbxDays_SelectionChanged(object sender, SelectionChangedEventArgs e)
+  {
+    if (e.AddedItems.Count <= 0) return;
+    var rr = e.AddedItems[0].ToString();
+
+    foreach(VideoUC item in wrapPnl.Children)
+    {
+      if(item is not null)
+      {
+        item.Visibility = item.Vf.Contains(rr) ? Visibility.Visible : Visibility.Collapsed;
+      }
+    }
+
   }
 }
