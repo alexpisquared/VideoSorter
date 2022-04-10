@@ -1,13 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Threading;
+﻿using System.Linq;
 
 namespace VideoSorter.Views;
 
@@ -20,10 +11,7 @@ public partial class VideoUC : UserControl
   readonly Brush _deleteBrush = new SolidColorBrush(Color.FromArgb(96, 128, 0, 0));
   readonly DoubleAnimation _da = new();
 
-  public VideoUC()
-  {
-    InitializeComponent();
-  }
+  public VideoUC() => InitializeComponent();
   public VideoUC(string item, string[] targetDirSuffixes) : this()
   {
     _vf = item;
@@ -33,6 +21,13 @@ public partial class VideoUC : UserControl
   async void OnLoaded(object s, RoutedEventArgs e)
   {
     me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(_vf);
+
+    tbkQA.Foreground = 
+      _vf.Contains(Consts._targetDirSuffixes[0]) ? Brushes.Green : 
+      _vf.Contains(Consts._targetDirSuffixes[1]) ? Brushes.Yellow : 
+      _vf.Contains(Consts._targetDirSuffixes[2]) ? Brushes.Red : Brushes.White;
+
+    tbkQA.Text = _vf.Split('\\')[^2];
 
     me1.Source = new Uri(_vf);
     me1.Play(); await Task.Delay(50); me1.Pause();

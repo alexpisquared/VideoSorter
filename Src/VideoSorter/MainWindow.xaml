@@ -24,10 +24,11 @@
     <Viewbox      Grid.Row="2" Height="100" Stretch="Uniform" HorizontalAlignment="Right" Margin="35" >
       <StackPanel  Height="50" x:Name="controlPanel1" Orientation="Horizontal" Background="#4000" >
         <TextBlock x:Name="tbkReport" d:Text="Loading ... " Foreground="#ff0" VerticalAlignment="Center" />
-        <Button Margin="5 10" Content="_Tgl Play" Click="OnTglPlay" IsDefault="True" />
-        <Button Margin="5 10" Content="_Restart"  Click="OnToStart" />
-        <Button Margin="5 10" Content="_Pause"    Click="OnPausAll" />
-        <Button Margin="5 10 10 10" Content=" _X "      Click="OnClose" IsCancel="True" />
+        <Button Margin="5 10" Content="_Tgl Play" Click="OnTglPlay" ToolTip="... for all" IsDefault="True" />
+        <Button Margin="5 10" Content="_Restart"  Click="OnToStart" ToolTip="... for all" />
+        <Button Margin="5 10" Content="_Pause"    Click="OnPausAll" ToolTip="... for all" />
+        <Button Margin="5 10" Content="_SubDirs"  Click="OnLdSubFr" ToolTip="..." Foreground="#00f"/>
+        <Button Margin="5 10" Content=" _X "      Click="OnClose" IsCancel="True" Width="0"/>
       </StackPanel>
     </Viewbox>
 

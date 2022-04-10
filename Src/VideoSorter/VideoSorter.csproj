@@ -7,4 +7,10 @@
     <ApplicationIcon>arrow_switch.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Update="Usings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

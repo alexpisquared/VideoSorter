@@ -1,112 +1,106 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using VideoSorter.Views;
+﻿namespace VideoSorter;
 
-namespace VideoSorter
+public partial class MainWindow : Window
 {
-  public partial class MainWindow : Window
+  const int _max = 32;
+  private string _srcDir;
+
+  public MainWindow()
   {
-    const int _max = 32;
-    readonly string[] _targetDirSuffixes = new[] { "best", "soso", "grbg" };
-    public MainWindow()
-    {
-      InitializeComponent();
-      MouseLeftButtonDown += (s, e) => DragMove();
-      KeyDown += (s, ves) => { switch (ves.Key) { case Key.Escape: Close(); App.Current.Shutdown(); break; } };
-    }
+    InitializeComponent();
+    MouseLeftButtonDown += (s, e) => DragMove();
+    KeyDown += (s, ves) => { switch (ves.Key) { case Key.Escape: Close(); App.Current.Shutdown(); break; } };
+  }
 
-    async void OnLoaded(object s, RoutedEventArgs e)
-    {
+  async void OnLoaded(object s, RoutedEventArgs e)
+  {
 #if DEBUG
-      Left = Top = -8;
+    Left = Top = -8;
 #else
-      WindowStartupLocation = WindowStartupLocation.CenterScreen;
-      WindowState = WindowState.Maximized;
+    WindowStartupLocation = WindowStartupLocation.CenterScreen;
+    WindowState = WindowState.Maximized;
 #endif
-      var srcDir = Environment.GetCommandLineArgs().Length > 1 ? Environment.GetCommandLineArgs()[1] : @"C:\Users\alexp\OneDrive\Pictures\Camera Roll 1";
+    _srcDir = Environment.GetCommandLineArgs().Length > 1 ? Environment.GetCommandLineArgs()[1] : @"C:\Users\alexp\OneDrive\Pictures\Camera Roll 1";
 
-      await TryLoadVideoFiles(srcDir);
-    }
+    await TryLoadVideoFiles(_srcDir, SearchOption.TopDirectoryOnly);
+  }
 
-    async Task TryLoadVideoFiles(string srcDir)
+  void OnTglPlay(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { /*vp.IsPlayingAll = !vp.IsPlayingAll*/; } }
+  void OnToStart(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.RestartFromBegining(); } }
+  void OnPausAll(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.Paus(); } }
+  void OnClose(object s, RoutedEventArgs e) { Close(); ; }
+  void Window_DragOver(object sender, DragEventArgs e)
+  {
+
+  }
+  async void Window_Drop(object sender, DragEventArgs e)
+  {
+    if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+    var files = e.Data.GetData(DataFormats.FileDrop) as string[];
+    if (files?.Length < 1) return;
+
+    //var csv = string.Join("|", files);
+
+    var srcDir = files.First();
+
+    await TryLoadVideoFiles(srcDir, SearchOption.TopDirectoryOnly);
+  }
+  async void OnLdSubFr(object s, RoutedEventArgs e)
+  {
+    wrapPnl.Children.Clear();
+    await TryLoadVideoFiles(_srcDir, SearchOption.AllDirectories);
+  }
+
+  async Task TryLoadVideoFiles(string srcDir, SearchOption so)
+  {
+    var videoFiles = Directory.GetFiles(srcDir, "*.mp4", so);
+    if (videoFiles.Length == 0)
     {
-      var videoFiles = Directory.GetFiles(srcDir, "*.mp4");
-      if (videoFiles.Length == 0)
+      var dirs = Directory.GetDirectories(srcDir);
+      if (dirs.Length == 0)
       {
-        var dirs = Directory.GetDirectories(srcDir);
-        if (dirs.Length == 0)
-        {
-          tbkInfo.Text = $"No files, nor folders in \n\t {srcDir}.\n\nDrop a better folder here.";
-          _ = Process.Start("Explorer.exe", srcDir);
-          return;
-        }
-
-        foreach (var dir in dirs)
-        {
-          srcDir = dir;
-          videoFiles = Directory.GetFiles(srcDir, "*.mp4");
-          if (videoFiles.Length == 0)
-            tbkInfo.Text += $"No files in \t {srcDir}.\n";
-          else
-          {
-            tbkInfo.Text += $"{videoFiles.Length} files in \t {srcDir}.\n";
-            goto rrr;
-          }
-        }
-
-        tbkInfo.Text = $"No files in subfolders  of \n\t {srcDir}.";
-        Process.Start("Explorer.exe", srcDir);
+        tbkInfo.Text = $"No files, nor folders in \n\t {srcDir}.\n\nDrop a better folder here.";
+        _ = Process.Start("Explorer.exe", srcDir);
         return;
       }
 
-      rrr:
-      foreach (var sfx in _targetDirSuffixes) if (!Directory.Exists(Path.Combine(srcDir, sfx))) Directory.CreateDirectory(Path.Combine(srcDir, sfx));
-      var loadCount = 0;
-      foreach (var filename in videoFiles.OrderBy(r => r))
+      foreach (var dir in dirs)
       {
-        if (++loadCount > _max) break;
-
-        wrapPnl.Children.Add(new VideoUC(filename, _targetDirSuffixes));
-
-        tbkReport.Text = $"  {loadCount} / {videoFiles.Length} files  ";
-
-        await Task.Delay(300);
+        srcDir = dir;
+        videoFiles = Directory.GetFiles(srcDir, "*.mp4");
+        if (videoFiles.Length == 0)
+          tbkInfo.Text += $"No files in \t {srcDir}.\n";
+        else
+        {
+          tbkInfo.Text += $"{videoFiles.Length} files in \t {srcDir}.\n";
+          goto rrr;
+        }
       }
 
-      tbkReport.Text =
-        loadCount == videoFiles.Length ?
-        $"  {loadCount} files loaded from: \n\t {srcDir}. " :
-        $"  {loadCount} files loaded out of  {videoFiles.Length}  from: \n\t {srcDir}. ";
-
-      System.Media.SystemSounds.Asterisk.Play();
+      tbkInfo.Text = $"No files in subfolders  of \n\t {srcDir}.";
+      Process.Start("Explorer.exe", srcDir);
+      return;
     }
 
-    void OnTglPlay(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { /*vp.IsPlayingAll = !vp.IsPlayingAll*/; } }
-    void OnToStart(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.RestartFromBegining(); } }
-    void OnPausAll(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.Paus(); } }
-    void OnClose(object s, RoutedEventArgs e) { Close(); ; }
-
-    void Window_DragOver(object sender, DragEventArgs e)
+    rrr:
+    foreach (var sfx in Consts._targetDirSuffixes) if (!Directory.Exists(Path.Combine(srcDir, sfx))) Directory.CreateDirectory(Path.Combine(srcDir, sfx));
+    var loadCount = 0;
+    foreach (var filename in videoFiles.OrderBy(r => r))
     {
+      if (++loadCount > _max) break;
 
+      wrapPnl.Children.Add(new VideoUC(filename, Consts._targetDirSuffixes));
+
+      tbkReport.Text = $"  {loadCount} / {videoFiles.Length} files  ";
+
+      await Task.Delay(300);
     }
 
-    async void Window_Drop(object sender, DragEventArgs e)
-    {
-      if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
-      var files = e.Data.GetData(DataFormats.FileDrop) as string[];
-      if (files?.Length < 1) return;
+    tbkReport.Text =
+      loadCount == videoFiles.Length ?
+      $"  {loadCount} files loaded from: \n\t {srcDir}. " :
+      $"  {loadCount} files loaded out of  {videoFiles.Length}  from: \n\t {srcDir}. ";
 
-      //var csv = string.Join("|", files);
-
-      var srcDir = files.First();
-
-      await TryLoadVideoFiles(srcDir);
-    }
+    System.Media.SystemSounds.Asterisk.Play();
   }
 }
