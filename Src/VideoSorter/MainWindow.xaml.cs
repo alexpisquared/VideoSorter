@@ -3,10 +3,13 @@
 public partial class MainWindow : Window
 {
   const int _max = 32;
-  private string _srcDir;
+  string _srcDir;
+  bool _loaded = false;
+  SortedList<DateOnly, int> _eventDays = new();
 
   public MainWindow()
   {
+    _srcDir = Environment.GetCommandLineArgs().Length > 1 ? Environment.GetCommandLineArgs()[1] : @"C:\Users\alexp\OneDrive\Pictures\Camera Roll 1";
     InitializeComponent();
     MouseLeftButtonDown += (s, e) => DragMove();
     KeyDown += (s, ves) => { switch (ves.Key) { case Key.Escape: Close(); App.Current.Shutdown(); break; } };
@@ -20,19 +23,16 @@ public partial class MainWindow : Window
     WindowStartupLocation = WindowStartupLocation.CenterScreen;
     WindowState = WindowState.Maximized;
 #endif
-    _srcDir = Environment.GetCommandLineArgs().Length > 1 ? Environment.GetCommandLineArgs()[1] : @"C:\Users\alexp\OneDrive\Pictures\Camera Roll 1";
 
-    await TryLoadVideoFiles(_srcDir, SearchOption.TopDirectoryOnly);
+    //await TryLoadVideoFiles(_srcDir, SearchOption.TopDirectoryOnly);
+    _loaded = true;
   }
 
   void OnTglPlay(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { /*vp.IsPlayingAll = !vp.IsPlayingAll*/; } }
   void OnToStart(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.RestartFromBegining(); } }
   void OnPausAll(object s, RoutedEventArgs e) { foreach (VideoUC vp in wrapPnl.Children) { vp.Paus(); } }
   void OnClose(object s, RoutedEventArgs e) { Close(); ; }
-  void Window_DragOver(object sender, DragEventArgs e)
-  {
-
-  }
+  void Window_DragOver(object sender, DragEventArgs e) { }
   async void Window_Drop(object sender, DragEventArgs e)
   {
     if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
@@ -41,19 +41,15 @@ public partial class MainWindow : Window
 
     //var csv = string.Join("|", files);
 
-    var srcDir = files.First();
+    _srcDir = files.First();
 
-    await TryLoadVideoFiles(srcDir, SearchOption.TopDirectoryOnly);
+    await TryLoadVideoFiles(_srcDir, SearchOption.TopDirectoryOnly);
   }
-  async void OnLdSubFr(object s, RoutedEventArgs e)
-  {
-    wrapPnl.Children.Clear();
-    await TryLoadVideoFiles(_srcDir, SearchOption.AllDirectories);
-  }
+  async void OnLdSubFr(object s, RoutedEventArgs e)  {    wrapPnl.Children.Clear();    await TryLoadVideoFiles(_srcDir, SearchOption.AllDirectories);  }
 
-  async Task TryLoadVideoFiles(string srcDir, SearchOption so)
+  async Task TryLoadVideoFiles(string srcDir, SearchOption withSubDirs)
   {
-    var videoFiles = Directory.GetFiles(srcDir, "*.mp4", so);
+    var videoFiles = Directory.GetFiles(srcDir, "*.mp4", withSubDirs);
     if (videoFiles.Length == 0)
     {
       var dirs = Directory.GetDirectories(srcDir);
@@ -83,8 +79,9 @@ public partial class MainWindow : Window
     }
 
     rrr:
+    LoadEvents(srcDir, withSubDirs);
+
     foreach (var sfx in Consts._targetDirSuffixes) if (!Directory.Exists(Path.Combine(srcDir, sfx))) Directory.CreateDirectory(Path.Combine(srcDir, sfx));
-    cbxDays.Items.Clear();
     var loadCount = 0;
     foreach (var filename in videoFiles.OrderBy(r => r))
     {
@@ -93,10 +90,6 @@ public partial class MainWindow : Window
       wrapPnl.Children.Add(new VideoUC(filename, Consts._targetDirSuffixes));
 
       tbkReport.Text = $"  {loadCount} / {videoFiles.Length} files  ";
-
-      var fd = filename.Split('_')[1];
-      if (!cbxDays.Items.Contains(fd))
-        cbxDays.Items.Add(fd);
 
       await Task.Delay(300);
     }
@@ -109,18 +102,49 @@ public partial class MainWindow : Window
     System.Media.SystemSounds.Asterisk.Play();
   }
 
-  void cbxDays_SelectionChanged(object sender, SelectionChangedEventArgs e)
+  void LoadEvents(string srcDir, SearchOption withSubDirs)
   {
-    if (e.AddedItems.Count <= 0) return;
-    var rr = e.AddedItems[0].ToString();
-
-    foreach(VideoUC item in wrapPnl.Children)
+    _eventDays.Clear();
+    FileInfo[] fis = new DirectoryInfo(srcDir).GetFiles("*.mp4", withSubDirs);
+    foreach (FileInfo fi in fis)
     {
-      if(item is not null)
-      {
-        item.Visibility = item.Vf.Contains(rr) ? Visibility.Visible : Visibility.Collapsed;
-      }
+      var date = DateOnly.FromDateTime(fi.CreationTime);
+      if (!_eventDays.ContainsKey(date))
+        _eventDays.Add(date, 1);
+      else
+        _eventDays[date]++;
     }
 
+    cbxDays.Items.Clear();
+    foreach (var f in _eventDays.OrderByDescending(r => r.Key))
+      cbxDays.Items.Add($"{f.Key:yyyy-MM-dd ddd}\t {f.Value,3}");
+
+    cbxDays.SelectedIndex = 0;
   }
+
+ async void cbxDays_SelectionChanged(object sender, SelectionChangedEventArgs e)
+  {
+    if (e.AddedItems.Count <= 0) return;
+    var rr = e.AddedItems[0].ToString().Split('\t').First();
+    if (!DateOnly.TryParse(rr, out var day)) throw new InvalidDataException($"{rr} is not a date.▄▀▄▀▄▀");
+
+    wrapPnl.Children.Clear();
+    FileInfo[] fis = new DirectoryInfo(_srcDir).GetFiles("*.mp4", SearchOption.AllDirectories);
+    foreach (FileInfo fi in fis.Where(r => DateOnly.FromDateTime(r.CreationTime) == day))
+    {
+      wrapPnl.Children.Add(new VideoUC(fi.FullName, Consts._targetDirSuffixes));
+      await Task.Delay(300);
+    }
+
+    tbkReport.Text = $"  {wrapPnl.Children.Count} files loaded from: \n\t {_srcDir}. ";
+
+    System.Media.SystemSounds.Asterisk.Play();
+
+    //foreach (VideoUC item in wrapPnl.Children)    {      if (item is not null)      {        item.Visibility = item.Vf.Contains(rr) ? Visibility.Visible : Visibility.Collapsed;      }    }
+  }
+
+  void CheckBox_Checked(object sender, RoutedEventArgs e) { if (_loaded) LoadEvents(_srcDir, SearchOption.AllDirectories); }
+  void CheckBox_Unchecked(object sender, RoutedEventArgs e) { if (_loaded) LoadEvents(_srcDir, SearchOption.AllDirectories); }
+  void CheckBox_Checke2(object sender, RoutedEventArgs e) { }
+  void CheckBox_Unchecke2(object sender, RoutedEventArgs e) { }
 }

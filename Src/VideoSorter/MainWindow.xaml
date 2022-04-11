@@ -28,6 +28,8 @@
         <Button Margin="5 10" Content="_Restart"  Click="OnToStart" ToolTip="... for all" />
         <Button Margin="5 10" Content="_Pause"    Click="OnPausAll" ToolTip="... for all" />
         <Button Margin="5 10" Content="_SubDirs"  Click="OnLdSubFr" ToolTip="..." Foreground="#00f"/>
+        <CheckBox Margin="5 10" Content="Sub_Dirs"  IsChecked="True" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"  ToolTip="..." Foreground="#00f" VerticalAlignment="Center"/>
+        <CheckBox Margin="5 10" Content="_New Only" IsChecked="True" Checked="CheckBox_Checke2" Unchecked="CheckBox_Unchecke2"  ToolTip="..." Foreground="#080" VerticalAlignment="Center"/>
         <ComboBox Margin="5 10" x:Name="cbxDays" MinWidth="120" SelectionChanged="cbxDays_SelectionChanged" />
         <Button Margin="5 10" Content=" _X "      Click="OnClose" IsCancel="True" Width="0"/>
       </StackPanel>
