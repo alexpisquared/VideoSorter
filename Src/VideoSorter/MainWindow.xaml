@@ -1,9 +1,6 @@
 ﻿<Window x:Class="VideoSorter.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
         xmlns:local="clr-namespace:VideoSorter"
-        Title="Video Sorter" 
-        Loaded="OnLoaded"
-        Width="1940" Height="1080" Background="#444" WindowStyle="None" 
-        AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop" >
+        Title="Video Sorter" Loaded="OnLoaded" Width="1940" Height="1080" Background="#444" WindowStyle="None" AllowDrop="True" Drop="Window_Drop" >
   <Grid >
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -14,24 +11,27 @@
     <StackPanel   Grid.Row="0" x:Name="headerPanel1"  Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Visibility="Collapsed"/>
 
     <Viewbox      Grid.Row="1">
-      <TextBlock d:Text="No files in ..." x:Name="tbkInfo" Foreground="#88f" Padding="10" Background="#8000"/>
+      <TextBlock d:Text="No files.." x:Name="tbkInfo" Foreground="#88f" Padding="10"/>
     </Viewbox>
 
     <ScrollViewer Grid.Row="1" Grid.RowSpan="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
       <WrapPanel  x:Name="wrapPnl" />
     </ScrollViewer>
 
-    <Viewbox      Grid.Row="2" Height="100" Stretch="Uniform" HorizontalAlignment="Right" Margin="35" >
-      <StackPanel  Height="50" x:Name="controlPanel1" Orientation="Horizontal" Background="#4000" >
-        <TextBlock x:Name="tbkReport" d:Text="Loading ... " Foreground="#ff0" VerticalAlignment="Center" />
-        <Button Margin="5 10" Content="_Tgl Play" Click="OnTglPlay" ToolTip="... for all" IsDefault="True" />
+    <Viewbox      Grid.Row="2" Height="80" Stretch="Uniform" HorizontalAlignment="Right" Margin="35" >
+      <StackPanel              Height="50" x:Name="controlPanel1" Orientation="Horizontal" Background="#4000" >
+        <TextBlock Margin="8 0" x:Name="tbkReport" d:Text="Loading ... " Foreground="#ff0" VerticalAlignment="Center" />
+        <!--<Button Margin="5 10" Content="_SubDirs"  Click="OnLdSubFr" ToolTip="..." Foreground="#00f"/>
+        <CheckBox Margin="5 10" Content="_Sub Dirs" IsChecked="True"  Checked="SubDirs_Checked" Unchecked="SubDirs_UnChckd" x:Name="chkSubDirs" ToolTip="..." Foreground="#08f" VerticalAlignment="Center"/>
+        <Button Margin="5 10" Content="_Tgl Play" Click="OnTglPlay" ToolTip="... for all" IsDefault="True" />-->
         <Button Margin="5 10" Content="_Restart"  Click="OnToStart" ToolTip="... for all" />
         <Button Margin="5 10" Content="_Pause"    Click="OnPausAll" ToolTip="... for all" />
-        <Button Margin="5 10" Content="_SubDirs"  Click="OnLdSubFr" ToolTip="..." Foreground="#00f"/>
-        <CheckBox Margin="5 10" Content="Sub_Dirs"  IsChecked="True" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"  ToolTip="..." Foreground="#00f" VerticalAlignment="Center"/>
-        <CheckBox Margin="5 10" Content="_New Only" IsChecked="True" Checked="CheckBox_Checke2" Unchecked="CheckBox_Unchecke2"  ToolTip="..." Foreground="#080" VerticalAlignment="Center"/>
-        <ComboBox Margin="5 10" x:Name="cbxDays" MinWidth="120" SelectionChanged="cbxDays_SelectionChanged" />
-        <Button Margin="5 10" Content=" _X "      Click="OnClose" IsCancel="True" Width="0"/>
+        
+        <CheckBox Foreground="#080" Margin="25 0 15 0" Content="_New Only" IsChecked="True" Checked="NewOnly_Checked" Unchecked="NewOnly_UnChckd" x:Name="chkNewOnly" ToolTip="..." VerticalAlignment="Center"/>
+        <Label    Foreground="#080" Content="_X" Target="{Binding ElementName=cbxDays}" VerticalAlignment="Center" />
+        <ComboBox Foreground="#080" Margin="10" x:Name="cbxDays" MinWidth="120" SelectionChanged="cbxDays_SelectionChanged" />
+        
+        <Button Click="OnClose" IsCancel="True" Width="0" />
       </StackPanel>
     </Viewbox>
 

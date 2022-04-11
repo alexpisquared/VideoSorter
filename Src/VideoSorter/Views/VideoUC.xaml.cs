@@ -1,35 +1,30 @@
-﻿using System.Linq;
-
-namespace VideoSorter.Views;
+﻿namespace VideoSorter.Views;
 
 public partial class VideoUC : UserControl
 {
   string _vf;
-  readonly string[] _targetDirSuffixes;
-  bool _isplaying, _isPlaying;
-  private bool _wasPlaying;
+  bool _ip2, _ip1, _wasPlaying;
   readonly Brush _deleteBrush = new SolidColorBrush(Color.FromArgb(96, 128, 0, 0));
   readonly DoubleAnimation _da = new();
 
   public VideoUC() => InitializeComponent();
-  public VideoUC(string vfn, string[] targetDirSuffixes) : this()
+  public VideoUC(string vfn) : this()
   {
-    Vf = vfn;
-    _targetDirSuffixes = targetDirSuffixes;
+    VideoFile = vfn;
     _ = new DispatcherTimer(TimeSpan.FromSeconds(.1), DispatcherPriority.Background, new EventHandler((s, e) => Tick()), Dispatcher.CurrentDispatcher);//tu: one-line timer	C:\g\BMO-Bid\Src\OLP.DAQ\Logic\ProgrDemo.cs	17	5	C:\g\BMO-Bid\Src\OLP.DAQ\Logic
   }
   async void OnLoaded(object s, RoutedEventArgs e)
   {
-    me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(Vf);
+    me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(VideoFile);
 
-    tbkQA.Foreground = 
-      Vf.Contains(Consts._targetDirSuffixes[0]) ? Brushes.Green : 
-      Vf.Contains(Consts._targetDirSuffixes[1]) ? Brushes.Yellow : 
-      Vf.Contains(Consts._targetDirSuffixes[2]) ? Brushes.Red : Brushes.White;
+    tbkQA.Foreground =
+      VideoFile.Contains(Consts.TargetDirSuffixes[0]) ? Brushes.Green :
+      VideoFile.Contains(Consts.TargetDirSuffixes[1]) ? Brushes.Yellow :
+      VideoFile.Contains(Consts.TargetDirSuffixes[2]) ? Brushes.Red : Brushes.White;
 
-    tbkQA.Text = Vf.Split('\\')[^2];
+    tbkQA.Text = VideoFile.Split('\\')[^2];
 
-    me1.Source = new Uri(Vf);
+    me1.Source = new Uri(VideoFile);
     me1.Play(); await Task.Delay(50); me1.Pause();
     PreviewKeyDown += OnPreviewKeyDown;
   }
@@ -46,29 +41,27 @@ public partial class VideoUC : UserControl
 
   void Tick() => tbkDuration.Text = $" {me1.Position.TotalSeconds:N0} / {(me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 0):N0} ";//prgDuration.Maximum = me1.NaturalDuration.HasTimeSpan ? me1.NaturalDuration.TimeSpan.TotalSeconds : 100;//prgDuration.Value = me1.Position.TotalSeconds;
 
-  public string VideoFile { get => Vf; internal set => tbkFilename.Text = Vf = value; }
-  public bool IsPlaying { get => _isPlaying; set { if (_isPlaying = value) Play(); else Paus(); } }
+  public string VideoFile { get => _vf; set => _vf = value; }
 
-  public string Vf { get => _vf; set => _vf = value; }
-
-  internal void Play() { _isplaying = true; pnlFilename.Visibility = Visibility.Collapsed; me1.Play(); OnStartAnime(); }
-  internal void Paus() { _isplaying = false; pnlFilename.Visibility = Visibility.Visible; me1.Pause(); OnPauseAnime(me1.Position); }
+  public bool IsPlaying { get => _ip1; set { if (_ip1 = value) Play(); else Paus(); } }
+  internal void Play() { _ip2 = true; pnlFilename.Visibility = Visibility.Collapsed; me1.Play(); OnStartAnime(); }
+  internal void Paus() { _ip2 = false; pnlFilename.Visibility = Visibility.Visible; me1.Pause(); OnPauseAnime(me1.Position); }
   internal void RestartFromBegining() { me1.Stop(); if (IsPlaying) me1.Play(); }
   //public bool IsPlayingAll { get => _isplaying; set { _isplaying = value; if (value && IsPlaying) me1.Play(); else me1.Pause(); } }
 
   void OnRename(object s, RoutedEventArgs e)
   {
     RenamerPopup rp = new();
-    var prev = rp.FileName = Path.GetFileNameWithoutExtension(Vf);
+    var prev = rp.FileName = Path.GetFileNameWithoutExtension(VideoFile);
     rp.Owner = WpfUtils.FindParentWindow(this);
     var rv = rp.ShowDialog();
     if (rv == true)
     {
-      var nvf = Vf.Replace(prev, rp.FileName);
-      File.Move(Vf, nvf);
-      Vf = nvf;
-      me1.Source = new Uri(Vf);
-      me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(Vf);
+      var nvf = VideoFile.Replace(prev, rp.FileName);
+      File.Move(VideoFile, nvf);
+      VideoFile = nvf;
+      me1.Source = new Uri(VideoFile);
+      me1.ToolTip = tbkFilename.Text = Path.GetFileNameWithoutExtension(VideoFile);
     }
   }
 
@@ -102,42 +95,33 @@ public partial class VideoUC : UserControl
 
       var trg = "";
 
-      foreach (var srt in _targetDirSuffixes)
-        trg = Vf.Replace($@"\{srt}\", @"\");
+      foreach (var sort in Consts.TargetDirSuffixes) trg = VideoFile.Replace($@"\{sort}\", @"\"); // remove sort suffix if there.
 
       var trgp = Path.GetDirectoryName(trg);
       var trgf = Path.GetFileName(trg);
 
-      switch (whereTo)
-      {
-        case "1": trg = Path.Combine(trgp, _targetDirSuffixes[0], trgf); break;
-        case "2": trg = Path.Combine(trgp, _targetDirSuffixes[1], trgf); break;
-        case "3": trg = Path.Combine(trgp, _targetDirSuffixes[2], trgf); break;
-        default: break;
-      }
-
       pnlFilename.Visibility = Visibility.Visible;
       pnlFilename.Background = _deleteBrush;
-      Debug.WriteLine($"Moving from/to\n  {Vf}\n  {trg}");
       if (whereTo == "Dlt")
       {
-        if (MessageBox.Show($"Deleting \n\n  {Vf}", "Are you sure?", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-          File.Delete(Vf);
+        if (MessageBox.Show($"Deleting \n\n  {VideoFile}", "Are you sure?", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+        {
+          File.Delete(VideoFile);
+          Width = Height = 0;
+        }
       }
       else
       {
-        File.Move(Vf, trg);
+        var trg0 = Path.Combine(trgp, whereTo);
+        if (!Directory.Exists(trg0)) Directory.CreateDirectory(trg0);
+        trg = Path.Combine(trgp, whereTo, trgf);
+        Debug.WriteLine($"Moving from/to\n  {VideoFile}\n  {trg}");
+        File.Move(VideoFile, trg);
         Width = Height = 0;
       }
     }
-    catch (Exception ex)
-    {
-      MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-    }
-    finally
-    {
-      pnlFilename.Background = Brushes.Transparent;
-    }
+    catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+    finally { pnlFilename.Background = Brushes.Transparent; }
   }
 
   void OnPreviewKeyDown(object s, KeyEventArgs e) => tbkFilename.Text = $"PreviewKeyDown (off Loaded): {e.Key}";
@@ -169,21 +153,7 @@ public partial class VideoUC : UserControl
   void Bold_Checked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Bold;
 
   async void OnSliderChanged(object s, RoutedPropertyChangedEventArgs<double> e) { Trace.Write("|"); me1.Position = TimeSpan.FromSeconds(e.NewValue); OnPauseAnime(me1.Position); me1.Play(); await Task.Delay(50); me1.Pause(); }
-  void OnSliderPreviewMouseDn(object s, MouseButtonEventArgs e) { Trace.WriteLine("\r▀▄▄▄"); _wasPlaying = _isplaying; Paus(); }
+  void OnSliderPreviewMouseDn(object s, MouseButtonEventArgs e) { Trace.WriteLine("\r▀▄▄▄"); _wasPlaying = _ip2; Paus(); }
   void OnSliderPreviewMouseUp(object s, MouseButtonEventArgs e) { Trace.WriteLine("\n▄▀▀▀"); if (_wasPlaying) Play(); }
-
   void Bold_Unchecked(object s, RoutedEventArgs e) => tbkFilename.FontWeight = FontWeights.Normal;
-}
-public static class WpfUtils
-{
-  public static Window FindParentWindow(FrameworkElement element)
-  {
-    if (element.Parent == null) return null;
-
-    if (element.Parent as Window != null) return element.Parent as Window;
-
-    if (element.Parent as FrameworkElement != null) return FindParentWindow(element.Parent as FrameworkElement);
-
-    return null;
-  }
 }

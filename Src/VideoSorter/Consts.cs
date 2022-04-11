@@ -2,5 +2,5 @@
 
 public class Consts
 {
-  public static readonly string[] _targetDirSuffixes = new[] { "best", "soso", "grbg" };
+  public static readonly string[] TargetDirSuffixes = new[] { "best", "soso", "grbg" };
 }
