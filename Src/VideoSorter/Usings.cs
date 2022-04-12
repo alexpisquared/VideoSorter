@@ -11,3 +11,5 @@ global using System.Windows.Threading;
 global using System.Linq;
 global using VideoSorter.Views;
 global using System.Collections.Generic;
+global using static System.Diagnostics.Trace;
+global using static System.Media.SystemSounds;

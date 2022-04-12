@@ -91,6 +91,8 @@ public partial class MainWindow : Window
         cbxDays.Items.Add($"{f.Key:yyyy-MM-dd ddd}\t {f.Value,3}");
 
       cbxDays.SelectedIndex = 0;
+
+      tbkReport.Text = $"{fis.Length} files found of {_eventDays.Count} events  {fis.Sum(r=>r.Length)*.000000001:N2} Gb.  \n\t {_srcDir}. ";
     }
     catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
     finally { }
@@ -109,8 +111,6 @@ public partial class MainWindow : Window
       await Task.Delay(300);
     }
 
-    tbkReport.Text = $"{wrapPnl.Children.Count} files found.  \n\t {_srcDir}. ";
-
-    System.Media.SystemSounds.Asterisk.Play();
+    Asterisk.Play();
   }
 }

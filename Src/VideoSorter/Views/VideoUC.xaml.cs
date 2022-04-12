@@ -35,7 +35,9 @@ public partial class VideoUC : UserControl
   {
     ApplyAnimationClock(AnimPosnProperty, null);
     _da.From = praDuration.Value = position.TotalSeconds;
-    _da.To = praDuration.Maximum = sldDuration.Maximum = me1.NaturalDuration.TimeSpan.TotalSeconds;
+    if (!me1.NaturalDuration.HasTimeSpan) return;
+
+      _da.To = praDuration.Maximum = sldDuration.Maximum = me1.NaturalDuration.TimeSpan.TotalSeconds;
     _da.Duration = me1.NaturalDuration.TimeSpan - position;
   }
 
@@ -68,14 +70,13 @@ public partial class VideoUC : UserControl
   void Me1_Loaded(object s, RoutedEventArgs e) { if (me1.NaturalDuration.HasTimeSpan) tbkDuration.Text = $"{me1.NaturalDuration.TimeSpan:mm\\:ss} Loed"; }
   void Me1_MediaOpened(object s, RoutedEventArgs e)
   {
-    if (me1.NaturalDuration.HasTimeSpan)
-    {
+    if (!me1.NaturalDuration.HasTimeSpan) return;
+
       _da.From = 0;
       _da.To = praDuration.Maximum = sldDuration.Maximum = me1.NaturalDuration.TimeSpan.TotalSeconds;
       _da.Duration = me1.NaturalDuration.TimeSpan;
 
       tbkDuration.Text = $" {me1.NaturalDuration.TimeSpan.TotalSeconds:N0} ";
-    }
   }
   void Me1_MediaFailed(object s, ExceptionRoutedEventArgs e) => tbkDuration.Text = $"{e.ErrorException.Message}";
   void Me1_MediaEnded(object s, RoutedEventArgs e)
