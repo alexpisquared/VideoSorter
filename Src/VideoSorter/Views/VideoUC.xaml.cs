@@ -49,7 +49,6 @@ public partial class VideoUC : UserControl
   internal void Play() { _ip2 = true; pnlFilename.Visibility = Visibility.Collapsed; me1.Play(); OnStartAnime(); }
   internal void Paus() { _ip2 = false; pnlFilename.Visibility = Visibility.Visible; me1.Pause(); OnPauseAnime(me1.Position); }
   internal void RestartFromBegining() { me1.Stop(); if (IsPlaying) me1.Play(); }
-  //public bool IsPlayingAll { get => _isplaying; set { _isplaying = value; if (value && IsPlaying) me1.Play(); else me1.Pause(); } }
 
   void OnRename(object s, RoutedEventArgs e)
   {
