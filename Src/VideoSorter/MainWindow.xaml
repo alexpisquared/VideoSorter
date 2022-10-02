@@ -1,6 +1,20 @@
 ﻿<Window x:Class="VideoSorter.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
         xmlns:local="clr-namespace:VideoSorter"
         Title="Video Sorter" Loaded="OnLoaded" Width="1940" Height="1080" Background="#444" WindowStyle="None" AllowDrop="True" Drop="Window_Drop" >
+  <Window.Resources>
+    <Style TargetType="{x:Type Button}">
+      <Setter Property="Background"     Value="Transparent" />
+      <Setter Property="Foreground"     Value="#00f" />
+      <Setter Property="Width"          Value="66" />
+    </Style>
+    <Style TargetType="{x:Type ComboBox}">
+      <Setter Property="Background"     Value="Transparent" />
+      <Setter Property="Foreground"     Value="#00f" />
+      <Setter Property="MinWidth"       Value="120" />
+      <Setter Property="IsReadOnly"     Value="False" />
+      <Setter Property="IsEditable"     Value="True" />
+    </Style>
+  </Window.Resources>
   <Grid >
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -29,8 +43,8 @@
         <Button Margin="5 10" Content="_Pause"    Click="OnPausAll" ToolTip="... for all" />
         
         <CheckBox Foreground="#080" Margin="25 0 15 0" Content="_New Only" IsChecked="True" Checked="NewOnly_Checked" Unchecked="NewOnly_UnChckd" x:Name="chkNewOnly" ToolTip="..." VerticalAlignment="Center"/>
-        <Label    Foreground="#080" Content="_X" Target="{Binding ElementName=cbxDays}" VerticalAlignment="Center" />
-        <ComboBox Foreground="#080" Margin="10" x:Name="cbxDays" MinWidth="120" SelectionChanged="cbxDays_SelectionChanged" />
+        <Label    Foreground="#080" Content="_Days:" VerticalAlignment="Center" Target="{Binding ElementName=cbxDays}" />
+        <ComboBox Foreground="#080" Margin="10" SelectionChanged="cbxDays_SelectionChanged"          x:Name="cbxDays"  IsEditable="True" IsReadOnly="False" />
         
         <Button Click="OnClose" IsCancel="True" Width="0" />
       </StackPanel>
