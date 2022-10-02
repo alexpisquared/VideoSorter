@@ -3,16 +3,15 @@
         Title="Video Sorter" Loaded="OnLoaded" Width="1940" Height="1080" Background="#444" WindowStyle="None" AllowDrop="True" Drop="Window_Drop" >
   <Window.Resources>
     <Style TargetType="{x:Type Button}">
-      <Setter Property="Background"     Value="Transparent" />
-      <Setter Property="Foreground"     Value="#00f" />
-      <Setter Property="Width"          Value="66" />
+      <Setter Property="Background"       Value="Transparent" />
+      <Setter Property="Foreground"       Value="#00f" />
+      <Setter Property="Width"            Value="66" />
+      <Setter Property="BorderThickness"  Value="0" />
     </Style>
     <Style TargetType="{x:Type ComboBox}">
-      <Setter Property="Background"     Value="Transparent" />
-      <Setter Property="Foreground"     Value="#00f" />
-      <Setter Property="MinWidth"       Value="120" />
-      <Setter Property="IsReadOnly"     Value="False" />
-      <Setter Property="IsEditable"     Value="True" />
+      <Setter Property="Background"       Value="Transparent" />
+      <Setter Property="Foreground"       Value="#00f" />
+      <Setter Property="MinWidth"         Value="120" />
     </Style>
   </Window.Resources>
   <Grid >
@@ -33,7 +32,7 @@
     </ScrollViewer>
 
     <Viewbox      Grid.Row="2" Height="80" Stretch="Uniform" HorizontalAlignment="Right" Margin="35" >
-      <StackPanel              Height="50" x:Name="controlPanel1" Orientation="Horizontal" Background="#4000" >
+      <StackPanel              Height="46" x:Name="controlPanel1" Orientation="Horizontal" Background="#4000" >
         <TextBlock Margin="8 0" x:Name="tbkReport" d:Text="Loading ... " Foreground="#ff0" VerticalAlignment="Center" />
         <!--<Button Margin="5 10" Content="_SubDirs"  Click="OnLdSubFr" ToolTip="..." Foreground="#00f"/>
         <CheckBox Margin="5 10" Content="_Sub Dirs" IsChecked="True"  Checked="SubDirs_Checked" Unchecked="SubDirs_UnChckd" x:Name="chkSubDirs" ToolTip="..." Foreground="#08f" VerticalAlignment="Center"/>
@@ -42,9 +41,9 @@
         <Button Margin="5 10" Content="_To Start" Click="OnToStart" ToolTip="... for all" />
         <Button Margin="5 10" Content="_Pause"    Click="OnPausAll" ToolTip="... for all" />
         
-        <CheckBox Foreground="#080" Margin="25 0 15 0" Content="_New Only" IsChecked="True" Checked="NewOnly_Checked" Unchecked="NewOnly_UnChckd" x:Name="chkNewOnly" ToolTip="..." VerticalAlignment="Center"/>
-        <Label    Foreground="#080" Content="_Days:" VerticalAlignment="Center" Target="{Binding ElementName=cbxDays}" />
-        <ComboBox Foreground="#080" Margin="10" SelectionChanged="cbxDays_SelectionChanged"          x:Name="cbxDays"  IsEditable="True" IsReadOnly="False" />
+        <CheckBox Foreground="#0c0" Margin="25 0 15 0" Content="_New Only" IsChecked="True" Checked="NewOnly_Checked" Unchecked="NewOnly_UnChckd" x:Name="chkNewOnly" ToolTip="..." VerticalAlignment="Center"/>
+        <Label    Foreground="#0c0" Content="_Days:" VerticalAlignment="Center" Target="{Binding ElementName=cbxDays}" />
+        <ComboBox Foreground="#0c0" Margin="10" SelectionChanged="cbxDays_SelectionChanged"          x:Name="cbxDays"  />
         
         <Button Click="OnClose" IsCancel="True" Width="0" />
       </StackPanel>
