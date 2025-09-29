@@ -37,8 +37,8 @@
         <!--<Button Margin="5 10" Content="_SubDirs"  Click="OnLdSubFr" ToolTip="..." Foreground="#00f"/>
         <CheckBox Margin="5 10" Content="_Sub Dirs" IsChecked="True"  Checked="SubDirs_Checked" Unchecked="SubDirs_UnChckd" x:Name="chkSubDirs" ToolTip="..." Foreground="#08f" VerticalAlignment="Center"/>
         -->
-        <Button Margin="5 10" Content="_Tgl Play" Click="OnTglPlay" ToolTip="... for all ..can play 3 vidoes max" IsDefault="True" />
-        <Button Margin="5 10" Content="_To Start" Click="OnToStart" ToolTip="... for all" />
+        <Button Margin="5 10" Content="_Tgl Play" Click="OnTglPlay" ToolTip="... for all ..can play 3 vidoes max" IsDefault="True" FontWeight="ExtraBold" />
+        <Button Margin="5 10" Content="To _Start" Click="OnToStart" ToolTip="... for all" />
         <Button Margin="5 10" Content="_Pause"    Click="OnPausAll" ToolTip="... for all" />
         
         <CheckBox Foreground="#0c0" Margin="25 0 15 0" Content="_New Only" IsChecked="True" Checked="NewOnly_Checked" Unchecked="NewOnly_UnChckd" x:Name="chkNewOnly" ToolTip="..." VerticalAlignment="Center"/>

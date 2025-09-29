@@ -9,7 +9,7 @@ public partial class MainWindow : Window
 
   public MainWindow()
   {
-    _srcDir = Environment.GetCommandLineArgs().Length > 1 ? Environment.GetCommandLineArgs()[1] : @"C:\Users\alexp\OneDrive\Pictures\Camera Roll 1";
+    _srcDir = Environment.GetCommandLineArgs().Length > 1 ? Environment.GetCommandLineArgs()[1] : @"C:\Users\Oleksa\OneDrive\Pictures\Camera Roll 1\2025\09";
     InitializeComponent();
     MouseLeftButtonDown += (s, e) => DragMove();
     KeyDown += (s, ves) => { switch (ves.Key) { case Key.Escape: Close(); App.Current.Shutdown(); break; } };
@@ -33,7 +33,7 @@ public partial class MainWindow : Window
 #endif
 
     //await TryLoadVideoFiles(_srcDir, SearchOption.TopDirectoryOnly);
-    LoadEvents(_srcDir, SearchOption.AllDirectories);
+    LoadEvents(_srcDir, SearchOption.TopDirectoryOnly);
     cbxDays.Focus();
     _loaded = true;
   }
@@ -71,7 +71,7 @@ public partial class MainWindow : Window
     try
     {
       _eventDays.Clear();
-      FileInfo[] fis = new DirectoryInfo(srcDir).GetFiles("*.mp4", withSubDirs);
+      FileInfo[] fis = new DirectoryInfo(srcDir).GetFiles("*.MOV", withSubDirs);
       foreach (FileInfo fi in fis.Where(r => (
         chkNewOnly.IsChecked == false || (
         !r.FullName.Contains(Consts.TargetDirSuffixes[0]) &&
@@ -100,7 +100,7 @@ public partial class MainWindow : Window
   async Task LoadOneDay(DateOnly day)
   {
     wrapPnl.Children.Clear();
-    FileInfo[] fis = new DirectoryInfo(_srcDir).GetFiles("*.mp4", SearchOption.AllDirectories);
+    FileInfo[] fis = new DirectoryInfo(_srcDir).GetFiles("*.MOV", SearchOption.AllDirectories);
     foreach (FileInfo fi in fis.Where(r => DateOnly.FromDateTime(r.CreationTime) == day && (
       chkNewOnly.IsChecked == false || (
       !r.FullName.Contains(Consts.TargetDirSuffixes[0]) &&
